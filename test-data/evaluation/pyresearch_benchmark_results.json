@@ -1,0 +1,848 @@
+{
+  "comparison": [
+    {
+      "name": "istockphoto-502561495-612x612.jpg",
+      "human_gt": 2,
+      "peterhdd": {
+        "count": 2,
+        "confs": [
+          0.8559,
+          0.4926
+        ],
+        "lat_ms": 238.7,
+        "boxes": [
+          [
+            0,
+            198,
+            386,
+            376
+          ],
+          [
+            505,
+            55,
+            612,
+            124
+          ]
+        ]
+      },
+      "pyresearch": {
+        "count": 4,
+        "confs": [
+          0.6788,
+          0.647,
+          0.3473,
+          0.1992
+        ],
+        "lat_ms": 1108.4,
+        "boxes": [
+          [
+            0,
+            160,
+            414,
+            408
+          ],
+          [
+            69,
+            80,
+            599,
+            404
+          ],
+          [
+            149,
+            37,
+            398,
+            164
+          ],
+          [
+            352,
+            119,
+            499,
+            217
+          ]
+        ]
+      }
+    },
+    {
+      "name": "pothole_rdd_298.jpg",
+      "human_gt": 4,
+      "peterhdd": {
+        "count": 3,
+        "confs": [
+          0.8164,
+          0.7112,
+          0.1798
+        ],
+        "lat_ms": 220.7,
+        "boxes": [
+          [
+            111,
+            80,
+            228,
+            136
+          ],
+          [
+            332,
+            154,
+            448,
+            206
+          ],
+          [
+            99,
+            136,
+            149,
+            171
+          ]
+        ]
+      },
+      "pyresearch": {
+        "count": 6,
+        "confs": [
+          0.322,
+          0.2896,
+          0.2786,
+          0.2152,
+          0.2047,
+          0.2013
+        ],
+        "lat_ms": 194.6,
+        "boxes": [
+          [
+            104,
+            86,
+            187,
+            134
+          ],
+          [
+            0,
+            70,
+            362,
+            264
+          ],
+          [
+            225,
+            164,
+            306,
+            217
+          ],
+          [
+            0,
+            211,
+            99,
+            248
+          ],
+          [
+            87,
+            176,
+            239,
+            247
+          ],
+          [
+            144,
+            198,
+            242,
+            247
+          ]
+        ]
+      }
+    },
+    {
+      "name": "pothole_rdd_315.jpg",
+      "human_gt": 2,
+      "peterhdd": {
+        "count": 3,
+        "confs": [
+          0.9174,
+          0.71,
+          0.4525
+        ],
+        "lat_ms": 213.4,
+        "boxes": [
+          [
+            142,
+            176,
+            350,
+            259
+          ],
+          [
+            16,
+            192,
+            51,
+            215
+          ],
+          [
+            265,
+            119,
+            450,
+            183
+          ]
+        ]
+      },
+      "pyresearch": {
+        "count": 2,
+        "confs": [
+          0.8021,
+          0.5395
+        ],
+        "lat_ms": 189.4,
+        "boxes": [
+          [
+            153,
+            176,
+            318,
+            255
+          ],
+          [
+            103,
+            0,
+            401,
+            86
+          ]
+        ]
+      }
+    },
+    {
+      "name": "pothole_rdd_341.jpg",
+      "human_gt": 3,
+      "peterhdd": {
+        "count": 3,
+        "confs": [
+          0.6711,
+          0.5427,
+          0.3987
+        ],
+        "lat_ms": 195.9,
+        "boxes": [
+          [
+            318,
+            134,
+            453,
+            171
+          ],
+          [
+            49,
+            224,
+            214,
+            294
+          ],
+          [
+            87,
+            168,
+            219,
+            206
+          ]
+        ]
+      },
+      "pyresearch": {
+        "count": 4,
+        "confs": [
+          0.5361,
+          0.4187,
+          0.3136,
+          0.1623
+        ],
+        "lat_ms": 175.7,
+        "boxes": [
+          [
+            1,
+            177,
+            235,
+            300
+          ],
+          [
+            260,
+            130,
+            453,
+            170
+          ],
+          [
+            63,
+            220,
+            215,
+            298
+          ],
+          [
+            0,
+            0,
+            171,
+            72
+          ]
+        ]
+      }
+    },
+    {
+      "name": "pothole_road_test.jpg",
+      "human_gt": 2,
+      "peterhdd": {
+        "count": 0,
+        "confs": [],
+        "lat_ms": 192.6,
+        "boxes": []
+      },
+      "pyresearch": {
+        "count": 0,
+        "confs": [],
+        "lat_ms": 274.8,
+        "boxes": []
+      }
+    },
+    {
+      "name": "pothole_road_test2.jpg",
+      "human_gt": 3,
+      "peterhdd": {
+        "count": 0,
+        "confs": [],
+        "lat_ms": 218.5,
+        "boxes": []
+      },
+      "pyresearch": {
+        "count": 0,
+        "confs": [],
+        "lat_ms": 280.5,
+        "boxes": []
+      }
+    },
+    {
+      "name": "clean_road_highway.jpg",
+      "human_gt": 0,
+      "peterhdd": {
+        "count": 0,
+        "confs": [],
+        "lat_ms": 348.2,
+        "boxes": []
+      },
+      "pyresearch": {
+        "count": 1,
+        "confs": [
+          0.563
+        ],
+        "lat_ms": 399.8,
+        "boxes": [
+          [
+            0,
+            96,
+            452,
+            544
+          ]
+        ]
+      }
+    },
+    {
+      "name": "clean_road_urban.jpg",
+      "human_gt": 0,
+      "peterhdd": {
+        "count": 0,
+        "confs": [],
+        "lat_ms": 256.7,
+        "boxes": []
+      },
+      "pyresearch": {
+        "count": 0,
+        "confs": [],
+        "lat_ms": 252.4,
+        "boxes": []
+      }
+    }
+  ],
+  "conf_sweep": {
+    "0.1": {
+      "istockphoto-502561495-612x612.jpg": {
+        "count": 6,
+        "confs": [
+          0.6788,
+          0.647,
+          0.3473,
+          0.1992,
+          0.1392,
+          0.1278
+        ]
+      },
+      "pothole_rdd_298.jpg": {
+        "count": 9,
+        "confs": [
+          0.322,
+          0.2896,
+          0.2786,
+          0.2152,
+          0.2047,
+          0.2013,
+          0.1218,
+          0.1163,
+          0.1013
+        ]
+      },
+      "pothole_rdd_315.jpg": {
+        "count": 5,
+        "confs": [
+          0.8021,
+          0.5395,
+          0.1211,
+          0.1166,
+          0.112
+        ]
+      },
+      "pothole_rdd_341.jpg": {
+        "count": 5,
+        "confs": [
+          0.5361,
+          0.4187,
+          0.3136,
+          0.1623,
+          0.103
+        ]
+      },
+      "pothole_road_test.jpg": {
+        "count": 0,
+        "confs": []
+      },
+      "pothole_road_test2.jpg": {
+        "count": 0,
+        "confs": []
+      },
+      "clean_road_highway.jpg": {
+        "count": 1,
+        "confs": [
+          0.563
+        ]
+      },
+      "clean_road_urban.jpg": {
+        "count": 0,
+        "confs": []
+      }
+    },
+    "0.15": {
+      "istockphoto-502561495-612x612.jpg": {
+        "count": 4,
+        "confs": [
+          0.6788,
+          0.647,
+          0.3473,
+          0.1992
+        ]
+      },
+      "pothole_rdd_298.jpg": {
+        "count": 6,
+        "confs": [
+          0.322,
+          0.2896,
+          0.2786,
+          0.2152,
+          0.2047,
+          0.2013
+        ]
+      },
+      "pothole_rdd_315.jpg": {
+        "count": 2,
+        "confs": [
+          0.8021,
+          0.5395
+        ]
+      },
+      "pothole_rdd_341.jpg": {
+        "count": 4,
+        "confs": [
+          0.5361,
+          0.4187,
+          0.3136,
+          0.1623
+        ]
+      },
+      "pothole_road_test.jpg": {
+        "count": 0,
+        "confs": []
+      },
+      "pothole_road_test2.jpg": {
+        "count": 0,
+        "confs": []
+      },
+      "clean_road_highway.jpg": {
+        "count": 1,
+        "confs": [
+          0.563
+        ]
+      },
+      "clean_road_urban.jpg": {
+        "count": 0,
+        "confs": []
+      }
+    },
+    "0.2": {
+      "istockphoto-502561495-612x612.jpg": {
+        "count": 3,
+        "confs": [
+          0.6788,
+          0.647,
+          0.3473
+        ]
+      },
+      "pothole_rdd_298.jpg": {
+        "count": 6,
+        "confs": [
+          0.322,
+          0.2896,
+          0.2786,
+          0.2152,
+          0.2047,
+          0.2013
+        ]
+      },
+      "pothole_rdd_315.jpg": {
+        "count": 2,
+        "confs": [
+          0.8021,
+          0.5395
+        ]
+      },
+      "pothole_rdd_341.jpg": {
+        "count": 3,
+        "confs": [
+          0.5361,
+          0.4187,
+          0.3136
+        ]
+      },
+      "pothole_road_test.jpg": {
+        "count": 0,
+        "confs": []
+      },
+      "pothole_road_test2.jpg": {
+        "count": 0,
+        "confs": []
+      },
+      "clean_road_highway.jpg": {
+        "count": 1,
+        "confs": [
+          0.563
+        ]
+      },
+      "clean_road_urban.jpg": {
+        "count": 0,
+        "confs": []
+      }
+    },
+    "0.25": {
+      "istockphoto-502561495-612x612.jpg": {
+        "count": 3,
+        "confs": [
+          0.6788,
+          0.647,
+          0.3473
+        ]
+      },
+      "pothole_rdd_298.jpg": {
+        "count": 3,
+        "confs": [
+          0.322,
+          0.2896,
+          0.2786
+        ]
+      },
+      "pothole_rdd_315.jpg": {
+        "count": 2,
+        "confs": [
+          0.8021,
+          0.5395
+        ]
+      },
+      "pothole_rdd_341.jpg": {
+        "count": 3,
+        "confs": [
+          0.5361,
+          0.4187,
+          0.3136
+        ]
+      },
+      "pothole_road_test.jpg": {
+        "count": 0,
+        "confs": []
+      },
+      "pothole_road_test2.jpg": {
+        "count": 0,
+        "confs": []
+      },
+      "clean_road_highway.jpg": {
+        "count": 1,
+        "confs": [
+          0.563
+        ]
+      },
+      "clean_road_urban.jpg": {
+        "count": 0,
+        "confs": []
+      }
+    },
+    "0.3": {
+      "istockphoto-502561495-612x612.jpg": {
+        "count": 3,
+        "confs": [
+          0.6788,
+          0.647,
+          0.3473
+        ]
+      },
+      "pothole_rdd_298.jpg": {
+        "count": 1,
+        "confs": [
+          0.322
+        ]
+      },
+      "pothole_rdd_315.jpg": {
+        "count": 2,
+        "confs": [
+          0.8021,
+          0.5395
+        ]
+      },
+      "pothole_rdd_341.jpg": {
+        "count": 3,
+        "confs": [
+          0.5361,
+          0.4187,
+          0.3136
+        ]
+      },
+      "pothole_road_test.jpg": {
+        "count": 0,
+        "confs": []
+      },
+      "pothole_road_test2.jpg": {
+        "count": 0,
+        "confs": []
+      },
+      "clean_road_highway.jpg": {
+        "count": 1,
+        "confs": [
+          0.563
+        ]
+      },
+      "clean_road_urban.jpg": {
+        "count": 0,
+        "confs": []
+      }
+    },
+    "0.35": {
+      "istockphoto-502561495-612x612.jpg": {
+        "count": 2,
+        "confs": [
+          0.6788,
+          0.647
+        ]
+      },
+      "pothole_rdd_298.jpg": {
+        "count": 0,
+        "confs": []
+      },
+      "pothole_rdd_315.jpg": {
+        "count": 2,
+        "confs": [
+          0.8021,
+          0.5395
+        ]
+      },
+      "pothole_rdd_341.jpg": {
+        "count": 2,
+        "confs": [
+          0.5361,
+          0.4187
+        ]
+      },
+      "pothole_road_test.jpg": {
+        "count": 0,
+        "confs": []
+      },
+      "pothole_road_test2.jpg": {
+        "count": 0,
+        "confs": []
+      },
+      "clean_road_highway.jpg": {
+        "count": 1,
+        "confs": [
+          0.563
+        ]
+      },
+      "clean_road_urban.jpg": {
+        "count": 0,
+        "confs": []
+      }
+    }
+  },
+  "iou_sweep": {
+    "0.45": {
+      "istockphoto-502561495-612x612.jpg": {
+        "count": 4,
+        "confs": [
+          0.6788,
+          0.647,
+          0.3473,
+          0.1992
+        ]
+      },
+      "pothole_rdd_298.jpg": {
+        "count": 6,
+        "confs": [
+          0.322,
+          0.2896,
+          0.2786,
+          0.2152,
+          0.2047,
+          0.2013
+        ]
+      },
+      "pothole_rdd_315.jpg": {
+        "count": 2,
+        "confs": [
+          0.8021,
+          0.5395
+        ]
+      },
+      "pothole_rdd_341.jpg": {
+        "count": 4,
+        "confs": [
+          0.5361,
+          0.4187,
+          0.3136,
+          0.1623
+        ]
+      },
+      "pothole_road_test.jpg": {
+        "count": 0,
+        "confs": []
+      },
+      "pothole_road_test2.jpg": {
+        "count": 0,
+        "confs": []
+      },
+      "clean_road_highway.jpg": {
+        "count": 1,
+        "confs": [
+          0.563
+        ]
+      },
+      "clean_road_urban.jpg": {
+        "count": 0,
+        "confs": []
+      }
+    },
+    "0.5": {
+      "istockphoto-502561495-612x612.jpg": {
+        "count": 5,
+        "confs": [
+          0.6788,
+          0.647,
+          0.3473,
+          0.1992,
+          0.1804
+        ]
+      },
+      "pothole_rdd_298.jpg": {
+        "count": 6,
+        "confs": [
+          0.322,
+          0.2896,
+          0.2786,
+          0.2152,
+          0.2047,
+          0.2013
+        ]
+      },
+      "pothole_rdd_315.jpg": {
+        "count": 2,
+        "confs": [
+          0.8021,
+          0.5395
+        ]
+      },
+      "pothole_rdd_341.jpg": {
+        "count": 5,
+        "confs": [
+          0.5361,
+          0.4187,
+          0.4152,
+          0.1721,
+          0.1623
+        ]
+      },
+      "pothole_road_test.jpg": {
+        "count": 0,
+        "confs": []
+      },
+      "pothole_road_test2.jpg": {
+        "count": 0,
+        "confs": []
+      },
+      "clean_road_highway.jpg": {
+        "count": 2,
+        "confs": [
+          0.563,
+          0.2252
+        ]
+      },
+      "clean_road_urban.jpg": {
+        "count": 0,
+        "confs": []
+      }
+    },
+    "0.6": {
+      "istockphoto-502561495-612x612.jpg": {
+        "count": 5,
+        "confs": [
+          0.6788,
+          0.647,
+          0.5049,
+          0.3473,
+          0.1992
+        ]
+      },
+      "pothole_rdd_298.jpg": {
+        "count": 8,
+        "confs": [
+          0.322,
+          0.2896,
+          0.2786,
+          0.2152,
+          0.2147,
+          0.2047,
+          0.2013,
+          0.1707
+        ]
+      },
+      "pothole_rdd_315.jpg": {
+        "count": 2,
+        "confs": [
+          0.8021,
+          0.5395
+        ]
+      },
+      "pothole_rdd_341.jpg": {
+        "count": 7,
+        "confs": [
+          0.5361,
+          0.4187,
+          0.4152,
+          0.2732,
+          0.2053,
+          0.1721,
+          0.1623
+        ]
+      },
+      "pothole_road_test.jpg": {
+        "count": 0,
+        "confs": []
+      },
+      "pothole_road_test2.jpg": {
+        "count": 0,
+        "confs": []
+      },
+      "clean_road_highway.jpg": {
+        "count": 2,
+        "confs": [
+          0.563,
+          0.2991
+        ]
+      },
+      "clean_road_urban.jpg": {
+        "count": 0,
+        "confs": []
+      }
+    }
+  }
+}

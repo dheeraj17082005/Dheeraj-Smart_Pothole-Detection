@@ -1,0 +1,7 @@
+path: ./data/pothole.v1i.yolov4pytorch
+train: train/images
+val: valid/images
+
+nc: 1
+names:
+  0: pothole

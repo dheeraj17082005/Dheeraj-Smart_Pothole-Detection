@@ -1,0 +1,15 @@
+Rupesh Bhardwaj
+Palwal, Haryana, India
+ +91 9350856473 | bhardwajrupesh933@zohomail.in
+Date: 22-10-2025
+Hiring Team
+MATTERS
+Dear Team MATTERS,
+I’m writing to express my interest in the ML Intern (Copilot & AI Security) role at MATTERS. Currently in my final year of B.Tech. in Computer Science with a specialization in AI and ML at Shri Vishwakarma Skill University, I’ve developed a solid grasp of machine learning, deep learning, and secure development workflows — all of which resonate strongly with your mission to build reliable and responsible AI systems
+Throughout my academic journey, I’ve focused on applying theory to practical challenges. I built a Pothole Detection system using PyTorch and OpenCV, designed a Stock Price Prediction model with RNNs and Streamlit, and developed a Loan Default Prediction pipeline using ensemble techniques like Random Forest and CatBoost. Each of these projects is available on GitHub, complete with structured documentation, licensing, and reproducibility features.
+What draws me to MATTERS is your emphasis on Copilot and AI Security — areas I’m actively exploring. I’ve earned certifications in computer vision, generative models, and neural networks through Infosys Springboard, and I’m currently diving deeper into secure model deployment, ethical AI practices, and explainable ML.
+I take pride in my attention to detail and my ability to simplify complex ideas. Whether it’s debugging tricky logic, validating edge cases, or writing beginner-friendly documentation, I enjoy making technical work clear and collaborative.
+I’d be thrilled to contribute to your team and learn from the innovative work happening at MATTERS. Thank you for considering my application — I look forward to the possibility of working together.
+Warm regards,
+Rupesh Bhardwaj
+

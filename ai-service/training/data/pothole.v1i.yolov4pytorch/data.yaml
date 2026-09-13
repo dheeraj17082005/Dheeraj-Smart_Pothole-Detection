@@ -1,0 +1,6 @@
+path: C:/Users/bhard/Downloads/pothole.v1i.yolov4pytorch
+train: train/images
+val: valid/images
+
+nc: 1
+names: ["pothole"]

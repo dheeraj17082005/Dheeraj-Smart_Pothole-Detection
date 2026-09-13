@@ -1,0 +1,557 @@
+{
+  "vinothvikas1987/pothole-detection-yolov8": {
+    "threshold_metrics": {
+      "0.1": {
+        "tp_in_domain": "6/6",
+        "tp_ood": "0/3",
+        "total_tp": 6,
+        "total_fn": 3,
+        "fp_clean": 1,
+        "recall_pct": 66.7,
+        "precision_pct": 85.7,
+        "avg_conf": 0.4256
+      },
+      "0.15": {
+        "tp_in_domain": "6/6",
+        "tp_ood": "0/3",
+        "total_tp": 6,
+        "total_fn": 3,
+        "fp_clean": 1,
+        "recall_pct": 66.7,
+        "precision_pct": 85.7,
+        "avg_conf": 0.4256
+      },
+      "0.2": {
+        "tp_in_domain": "6/6",
+        "tp_ood": "0/3",
+        "total_tp": 6,
+        "total_fn": 3,
+        "fp_clean": 1,
+        "recall_pct": 66.7,
+        "precision_pct": 85.7,
+        "avg_conf": 0.4256
+      },
+      "0.25": {
+        "tp_in_domain": "6/6",
+        "tp_ood": "0/3",
+        "total_tp": 6,
+        "total_fn": 3,
+        "fp_clean": 1,
+        "recall_pct": 66.7,
+        "precision_pct": 85.7,
+        "avg_conf": 0.4256
+      },
+      "0.3": {
+        "tp_in_domain": "4/6",
+        "tp_ood": "0/3",
+        "total_tp": 4,
+        "total_fn": 5,
+        "fp_clean": 1,
+        "recall_pct": 44.4,
+        "precision_pct": 80.0,
+        "avg_conf": 0.5064
+      },
+      "0.35": {
+        "tp_in_domain": "4/6",
+        "tp_ood": "0/3",
+        "total_tp": 4,
+        "total_fn": 5,
+        "fp_clean": 1,
+        "recall_pct": 44.4,
+        "precision_pct": 80.0,
+        "avg_conf": 0.5064
+      },
+      "0.4": {
+        "tp_in_domain": "2/6",
+        "tp_ood": "0/3",
+        "total_tp": 2,
+        "total_fn": 7,
+        "fp_clean": 1,
+        "recall_pct": 22.2,
+        "precision_pct": 66.7,
+        "avg_conf": 0.6348
+      }
+    },
+    "image_details": {},
+    "user_problem_images": {
+      "istockphoto-502561495-612x612.jpg": {
+        "raw_detections": 0,
+        "raw_max_conf": 0.0,
+        "detected_at_020": false,
+        "detected_at_025": false,
+        "detections_025": []
+      },
+      "pothole_road_test.jpg": {
+        "raw_detections": 0,
+        "raw_max_conf": 0.0,
+        "detected_at_020": false,
+        "detected_at_025": false,
+        "detections_025": []
+      },
+      "pothole_road_test2.jpg": {
+        "raw_detections": 0,
+        "raw_max_conf": 0.0,
+        "detected_at_020": false,
+        "detected_at_025": false,
+        "detections_025": []
+      }
+    }
+  },
+  "peterhdd/pothole-detection-yolov8": {
+    "threshold_metrics": {
+      "0.1": {
+        "tp_in_domain": "6/6",
+        "tp_ood": "1/3",
+        "total_tp": 7,
+        "total_fn": 2,
+        "fp_clean": 2,
+        "recall_pct": 77.8,
+        "precision_pct": 77.8,
+        "avg_conf": 0.8275
+      },
+      "0.15": {
+        "tp_in_domain": "6/6",
+        "tp_ood": "1/3",
+        "total_tp": 7,
+        "total_fn": 2,
+        "fp_clean": 2,
+        "recall_pct": 77.8,
+        "precision_pct": 77.8,
+        "avg_conf": 0.8275
+      },
+      "0.2": {
+        "tp_in_domain": "6/6",
+        "tp_ood": "1/3",
+        "total_tp": 7,
+        "total_fn": 2,
+        "fp_clean": 1,
+        "recall_pct": 77.8,
+        "precision_pct": 87.5,
+        "avg_conf": 0.8275
+      },
+      "0.25": {
+        "tp_in_domain": "6/6",
+        "tp_ood": "1/3",
+        "total_tp": 7,
+        "total_fn": 2,
+        "fp_clean": 1,
+        "recall_pct": 77.8,
+        "precision_pct": 87.5,
+        "avg_conf": 0.8275
+      },
+      "0.3": {
+        "tp_in_domain": "6/6",
+        "tp_ood": "1/3",
+        "total_tp": 7,
+        "total_fn": 2,
+        "fp_clean": 1,
+        "recall_pct": 77.8,
+        "precision_pct": 87.5,
+        "avg_conf": 0.8275
+      },
+      "0.35": {
+        "tp_in_domain": "6/6",
+        "tp_ood": "1/3",
+        "total_tp": 7,
+        "total_fn": 2,
+        "fp_clean": 1,
+        "recall_pct": 77.8,
+        "precision_pct": 87.5,
+        "avg_conf": 0.8275
+      },
+      "0.4": {
+        "tp_in_domain": "6/6",
+        "tp_ood": "1/3",
+        "total_tp": 7,
+        "total_fn": 2,
+        "fp_clean": 0,
+        "recall_pct": 77.8,
+        "precision_pct": 100.0,
+        "avg_conf": 0.8275
+      }
+    },
+    "image_details": {},
+    "user_problem_images": {
+      "istockphoto-502561495-612x612.jpg": {
+        "raw_detections": 6,
+        "raw_max_conf": 0.8559,
+        "detected_at_020": true,
+        "detected_at_025": true,
+        "detections_025": [
+          {
+            "box": [
+              0,
+              198,
+              386,
+              376
+            ],
+            "confidence": 0.8559,
+            "area_ratio": 0.2751666025887479
+          },
+          {
+            "box": [
+              505,
+              55,
+              612,
+              124
+            ],
+            "confidence": 0.4926,
+            "area_ratio": 0.029567954632833526
+          }
+        ]
+      },
+      "pothole_road_test.jpg": {
+        "raw_detections": 3,
+        "raw_max_conf": 0.0375,
+        "detected_at_020": false,
+        "detected_at_025": false,
+        "detections_025": []
+      },
+      "pothole_road_test2.jpg": {
+        "raw_detections": 0,
+        "raw_max_conf": 0.0,
+        "detected_at_020": false,
+        "detected_at_025": false,
+        "detections_025": []
+      }
+    }
+  },
+  "tahaUgan/pothole-yolo11n": {
+    "threshold_metrics": {
+      "0.1": {
+        "tp_in_domain": "5/6",
+        "tp_ood": "2/3",
+        "total_tp": 7,
+        "total_fn": 2,
+        "fp_clean": 0,
+        "recall_pct": 77.8,
+        "precision_pct": 100.0,
+        "avg_conf": 0.7279
+      },
+      "0.15": {
+        "tp_in_domain": "5/6",
+        "tp_ood": "2/3",
+        "total_tp": 7,
+        "total_fn": 2,
+        "fp_clean": 0,
+        "recall_pct": 77.8,
+        "precision_pct": 100.0,
+        "avg_conf": 0.7279
+      },
+      "0.2": {
+        "tp_in_domain": "5/6",
+        "tp_ood": "2/3",
+        "total_tp": 7,
+        "total_fn": 2,
+        "fp_clean": 0,
+        "recall_pct": 77.8,
+        "precision_pct": 100.0,
+        "avg_conf": 0.7279
+      },
+      "0.25": {
+        "tp_in_domain": "5/6",
+        "tp_ood": "1/3",
+        "total_tp": 6,
+        "total_fn": 3,
+        "fp_clean": 0,
+        "recall_pct": 66.7,
+        "precision_pct": 100.0,
+        "avg_conf": 0.809
+      },
+      "0.3": {
+        "tp_in_domain": "5/6",
+        "tp_ood": "1/3",
+        "total_tp": 6,
+        "total_fn": 3,
+        "fp_clean": 0,
+        "recall_pct": 66.7,
+        "precision_pct": 100.0,
+        "avg_conf": 0.809
+      },
+      "0.35": {
+        "tp_in_domain": "5/6",
+        "tp_ood": "1/3",
+        "total_tp": 6,
+        "total_fn": 3,
+        "fp_clean": 0,
+        "recall_pct": 66.7,
+        "precision_pct": 100.0,
+        "avg_conf": 0.809
+      },
+      "0.4": {
+        "tp_in_domain": "5/6",
+        "tp_ood": "1/3",
+        "total_tp": 6,
+        "total_fn": 3,
+        "fp_clean": 0,
+        "recall_pct": 66.7,
+        "precision_pct": 100.0,
+        "avg_conf": 0.809
+      }
+    },
+    "image_details": {},
+    "user_problem_images": {
+      "istockphoto-502561495-612x612.jpg": {
+        "raw_detections": 15,
+        "raw_max_conf": 0.953,
+        "detected_at_020": true,
+        "detected_at_025": true,
+        "detections_025": [
+          {
+            "box": [
+              104,
+              195,
+              356,
+              353
+            ],
+            "confidence": 0.953,
+            "area_ratio": 0.15945790080738179
+          },
+          {
+            "box": [
+              163,
+              74,
+              382,
+              148
+            ],
+            "confidence": 0.9034,
+            "area_ratio": 0.06490292195309497
+          },
+          {
+            "box": [
+              362,
+              118,
+              553,
+              252
+            ],
+            "confidence": 0.8984,
+            "area_ratio": 0.1025006407791875
+          },
+          {
+            "box": [
+              254,
+              31,
+              324,
+              59
+            ],
+            "confidence": 0.8236,
+            "area_ratio": 0.00784954504677688
+          },
+          {
+            "box": [
+              526,
+              57,
+              612,
+              112
+            ],
+            "confidence": 0.8188,
+            "area_ratio": 0.018943034730231963
+          },
+          {
+            "box": [
+              299,
+              62,
+              372,
+              90
+            ],
+            "confidence": 0.7382,
+            "area_ratio": 0.008185954120210176
+          },
+          {
+            "box": [
+              450,
+              168,
+              554,
+              251
+            ],
+            "confidence": 0.2782,
+            "area_ratio": 0.03457003716519287
+          }
+        ]
+      },
+      "pothole_road_test.jpg": {
+        "raw_detections": 2,
+        "raw_max_conf": 0.0293,
+        "detected_at_020": false,
+        "detected_at_025": false,
+        "detections_025": []
+      },
+      "pothole_road_test2.jpg": {
+        "raw_detections": 5,
+        "raw_max_conf": 0.2417,
+        "detected_at_020": true,
+        "detected_at_025": false,
+        "detections_025": []
+      }
+    }
+  },
+  "subhodeepmoitra/pothole-detection-yolov8": {
+    "threshold_metrics": {
+      "0.1": {
+        "tp_in_domain": "6/6",
+        "tp_ood": "1/3",
+        "total_tp": 7,
+        "total_fn": 2,
+        "fp_clean": 0,
+        "recall_pct": 77.8,
+        "precision_pct": 100.0,
+        "avg_conf": 0.7364
+      },
+      "0.15": {
+        "tp_in_domain": "6/6",
+        "tp_ood": "1/3",
+        "total_tp": 7,
+        "total_fn": 2,
+        "fp_clean": 0,
+        "recall_pct": 77.8,
+        "precision_pct": 100.0,
+        "avg_conf": 0.7364
+      },
+      "0.2": {
+        "tp_in_domain": "6/6",
+        "tp_ood": "1/3",
+        "total_tp": 7,
+        "total_fn": 2,
+        "fp_clean": 0,
+        "recall_pct": 77.8,
+        "precision_pct": 100.0,
+        "avg_conf": 0.7364
+      },
+      "0.25": {
+        "tp_in_domain": "6/6",
+        "tp_ood": "1/3",
+        "total_tp": 7,
+        "total_fn": 2,
+        "fp_clean": 0,
+        "recall_pct": 77.8,
+        "precision_pct": 100.0,
+        "avg_conf": 0.7364
+      },
+      "0.3": {
+        "tp_in_domain": "6/6",
+        "tp_ood": "1/3",
+        "total_tp": 7,
+        "total_fn": 2,
+        "fp_clean": 0,
+        "recall_pct": 77.8,
+        "precision_pct": 100.0,
+        "avg_conf": 0.7364
+      },
+      "0.35": {
+        "tp_in_domain": "6/6",
+        "tp_ood": "1/3",
+        "total_tp": 7,
+        "total_fn": 2,
+        "fp_clean": 0,
+        "recall_pct": 77.8,
+        "precision_pct": 100.0,
+        "avg_conf": 0.7364
+      },
+      "0.4": {
+        "tp_in_domain": "5/6",
+        "tp_ood": "1/3",
+        "total_tp": 6,
+        "total_fn": 3,
+        "fp_clean": 0,
+        "recall_pct": 66.7,
+        "precision_pct": 100.0,
+        "avg_conf": 0.7985
+      }
+    },
+    "image_details": {},
+    "user_problem_images": {
+      "istockphoto-502561495-612x612.jpg": {
+        "raw_detections": 12,
+        "raw_max_conf": 0.8519,
+        "detected_at_020": true,
+        "detected_at_025": true,
+        "detections_025": [
+          {
+            "box": [
+              114,
+              208,
+              350,
+              345
+            ],
+            "confidence": 0.8519,
+            "area_ratio": 0.12948545431244393
+          },
+          {
+            "box": [
+              533,
+              67,
+              612,
+              108
+            ],
+            "confidence": 0.7153,
+            "area_ratio": 0.012971773676790978
+          },
+          {
+            "box": [
+              306,
+              102,
+              549,
+              251
+            ],
+            "confidence": 0.679,
+            "area_ratio": 0.14500432525951557
+          },
+          {
+            "box": [
+              168,
+              56,
+              375,
+              148
+            ],
+            "confidence": 0.6593,
+            "area_ratio": 0.07626874279123413
+          },
+          {
+            "box": [
+              298,
+              67,
+              371,
+              91
+            ],
+            "confidence": 0.6419,
+            "area_ratio": 0.007016532103037294
+          },
+          {
+            "box": [
+              376,
+              4,
+              460,
+              34
+            ],
+            "confidence": 0.5573,
+            "area_ratio": 0.010092272202998846
+          },
+          {
+            "box": [
+              257,
+              36,
+              324,
+              54
+            ],
+            "confidence": 0.5375,
+            "area_ratio": 0.004829873125720877
+          }
+        ]
+      },
+      "pothole_road_test.jpg": {
+        "raw_detections": 0,
+        "raw_max_conf": 0.0,
+        "detected_at_020": false,
+        "detected_at_025": false,
+        "detections_025": []
+      },
+      "pothole_road_test2.jpg": {
+        "raw_detections": 1,
+        "raw_max_conf": 0.0481,
+        "detected_at_020": false,
+        "detected_at_025": false,
+        "detections_025": []
+      }
+    }
+  }
+}

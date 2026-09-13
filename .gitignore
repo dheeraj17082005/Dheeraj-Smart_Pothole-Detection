@@ -1,0 +1,35 @@
+# IDE & System
+.DS_Store
+.idea/
+.vscode/
+
+# Build outputs
+target/
+dist/
+build/
+*.class
+*.jar
+
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-error.log*
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+*.egg-info/
+.pytest_cache/
+
+# Local Environment & Secrets
+.env
+.env.*
+!.env.example
+*.log
+
+# Large Local AI Weights & Runs
+*.pt
+*.onnx
+runs/
