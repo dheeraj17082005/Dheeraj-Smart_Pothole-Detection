@@ -178,14 +178,14 @@ This document serves as the final evaluator checklist verifying the technical, f
 
 ### T. Automated Test Suite
 - **[PASS] End-to-End Unit & Component Tests**
-  - **Test performed**: Executed `npx vitest run` in frontend and `mvn compile` in backend.
-  - **Expected**: 28 / 28 frontend tests pass; backend compiles with 0 errors.
-  - **Actual**: **28 / 28 tests passed (100%)**.
+  - **Test performed**: Executed `mvn test` in backend, `npm test -- --run` in frontend, and `pytest` in ai-service.
+  - **Expected**: All automated tests pass across backend, frontend, and AI service.
+  - **Actual**: **157 / 157 tests passed (100%)** — 107 JUnit 5 backend tests, 28 Vitest frontend tests, 22 Pytest AI service tests.
 
 ---
 
 ### U. Documentation Suite
 - **[PASS] System Documentation & Specifications**
   - **Test performed**: Verified existence and correctness of all matrix docs.
-  - **Expected**: `ROLE_PERMISSION_MATRIX`, `API_AUTHORIZATION_MATRIX`, `COMPLETE_FUNCTIONALITY_CATALOG`, `CITIZEN_JOURNEY`, `OFFICER_JOURNEY`, `E2E_ACCEPTANCE_MATRIX`, `ROLE_AND_WORKFLOW_AUDIT`, `FUNCTIONALITY_GAP_REGISTER`, and `MASTER_SYSTEM_CHECKLIST`.
-  - **Actual**: All 9 documentation files present in `docs/`.
+  - **Expected**: `ROLE_PERMISSION_MATRIX`, `API_AUTHORIZATION_MATRIX`, `ROLE_UI_API_MATRIX`, `ROLE_BASED_E2E_MATRIX`, `COMPLETE_FUNCTIONALITY_CATALOG`, `CITIZEN_JOURNEY`, `OFFICER_JOURNEY`, `E2E_ACCEPTANCE_MATRIX`, `ROLE_AND_WORKFLOW_AUDIT`, `FUNCTIONALITY_GAP_REGISTER`, and `MASTER_SYSTEM_CHECKLIST`.
+  - **Actual**: All documentation files present in `docs/`.

@@ -16,6 +16,14 @@ import { RegisterPage } from './pages/RegisterPage';
 import { OfficerRegisterPage } from './pages/OfficerRegisterPage';
 import { OfficerDashboardPage } from './pages/OfficerDashboardPage';
 
+const DashboardRouter: React.FC = () => {
+  const { user } = useAuth();
+  if (user?.role === 'ROLE_OFFICER') {
+    return <OfficerDashboardPage />;
+  }
+  return <DashboardPage />;
+};
+
 export const App: React.FC = () => {
   return (
     <ThemeProvider>
@@ -54,7 +62,17 @@ export const App: React.FC = () => {
               element={
                 <ProtectedRoute>
                   <Layout>
-                    <DashboardPage />
+                    <DashboardRouter />
+                  </Layout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/dashboard"
+              element={
+                <ProtectedRoute>
+                  <Layout>
+                    <DashboardRouter />
                   </Layout>
                 </ProtectedRoute>
               }

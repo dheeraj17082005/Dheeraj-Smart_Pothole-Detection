@@ -51,15 +51,17 @@ export const Header: React.FC<HeaderProps> = ({ onToggleMobileMenu }) => {
   };
 
   const getPageTitle = (pathname: string): string => {
-    if (pathname === '/') return 'Road Overview';
+    if (pathname === '/' || pathname === '/dashboard') {
+      return isOfficer ? 'Municipal Officer Operations' : 'Citizen Overview & Reports';
+    }
     if (pathname.startsWith('/upload')) return 'Report Road Defect';
     if (pathname.startsWith('/potholes/') && pathname !== '/potholes') return 'Defect Record & Remediation';
     if (pathname.startsWith('/potholes')) return 'Road Defect Registry';
     if (pathname.startsWith('/map')) return 'Interactive Road Defect Map';
-    if (pathname.startsWith('/officer')) return 'Municipal Officer Dashboard';
+    if (pathname.startsWith('/officer')) return 'Municipal Officer Operations';
     if (pathname.startsWith('/login')) return 'User Sign In';
     if (pathname.startsWith('/register')) return 'Citizen Registration';
-    return 'PotholeX Citizen & Officer Portal';
+    return 'PotholeX Road Portal';
   };
 
   return (
@@ -95,7 +97,7 @@ export const Header: React.FC<HeaderProps> = ({ onToggleMobileMenu }) => {
               <line x1="12" y1="5" x2="12" y2="19" />
               <line x1="5" y1="12" x2="19" y2="12" />
             </svg>
-            <span>Report Defect</span>
+            <span>Report Pothole</span>
           </Link>
         )}
 

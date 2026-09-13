@@ -4,6 +4,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { MemoryRouter } from 'react-router-dom';
 import { DashboardPage } from './DashboardPage';
 import { apiClient } from '../services/api';
+import { AuthProvider } from '../context/AuthContext';
 
 vi.mock('../services/api', () => ({
   apiClient: {
@@ -28,9 +29,11 @@ describe('DashboardPage', () => {
     vi.mocked(apiClient.getPotholes).mockReturnValue(new Promise(() => {}));
 
     render(
-      <MemoryRouter>
-        <DashboardPage />
-      </MemoryRouter>
+      <AuthProvider>
+        <MemoryRouter>
+          <DashboardPage />
+        </MemoryRouter>
+      </AuthProvider>
     );
 
     expect(screen.getByText(/Loading operational statistics/i)).toBeInTheDocument();
@@ -72,9 +75,11 @@ describe('DashboardPage', () => {
     });
 
     render(
-      <MemoryRouter>
-        <DashboardPage />
-      </MemoryRouter>
+      <AuthProvider>
+        <MemoryRouter>
+          <DashboardPage />
+        </MemoryRouter>
+      </AuthProvider>
     );
 
     await waitFor(() => {
@@ -103,9 +108,11 @@ describe('DashboardPage', () => {
     });
 
     render(
-      <MemoryRouter>
-        <DashboardPage />
-      </MemoryRouter>
+      <AuthProvider>
+        <MemoryRouter>
+          <DashboardPage />
+        </MemoryRouter>
+      </AuthProvider>
     );
 
     await waitFor(() => {

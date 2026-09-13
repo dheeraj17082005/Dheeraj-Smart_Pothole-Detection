@@ -7,10 +7,12 @@ import { SeverityBadge, PotholeStatusBadge } from '../components/common/Badge';
 import { formatCoordinates, formatDateTime } from '../utils/formatters';
 import { LoadingSpinner } from '../components/common/LoadingSpinner';
 import { Alert } from '../components/common/Alert';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, Navigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 export const DashboardPage: React.FC = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [stats, setStats] = useState<DashboardStatsResponse | null>(null);
   const [statsLoading, setStatsLoading] = useState<boolean>(true);
   const [statsError, setStatsError] = useState<string | null>(null);
@@ -55,6 +57,10 @@ export const DashboardPage: React.FC = () => {
     };
   }, []);
 
+  if (user?.role === 'ROLE_OFFICER') {
+    return <Navigate to="/officer/dashboard" replace />;
+  }
+
   const openIssuesCount = stats
     ? stats.reportedCount + stats.acknowledgedCount + stats.inProgressCount
     : 0;
@@ -75,16 +81,16 @@ export const DashboardPage: React.FC = () => {
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.35rem' }}>
             <span style={{ fontSize: '0.72rem', fontWeight: 800, color: 'var(--brand-accent)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-              ROAD MAINTENANCE OPERATIONS
+              MY ROAD REPORTS & CIVIC DASHBOARD
             </span>
             <span style={{ color: 'var(--border)' }}>&bull;</span>
-            <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>CIVIC JURISDICTION</span>
+            <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>CITIZEN PORTAL</span>
           </div>
           <h1 style={{ fontSize: '1.95rem', fontWeight: 800, color: 'var(--text-main)', margin: '0 0 0.35rem 0', letterSpacing: '-0.025em' }}>
-            ROAD OVERVIEW
+            MY REPORTS & ROAD OVERVIEW
           </h1>
           <p style={{ margin: 0, color: 'var(--text-muted)', fontSize: '0.925rem' }}>
-            Monitor reported road hazards, track remediation progress, and coordinate public works repair crews.
+            Monitor your reported road hazards, track repair status in real-time, and view nearby community defect reports.
           </p>
         </div>
 
@@ -98,13 +104,13 @@ export const DashboardPage: React.FC = () => {
               <line x1="12" y1="5" x2="12" y2="19" />
               <line x1="5" y1="12" x2="19" y2="12" />
             </svg>
-            <span>Inspect Road</span>
+            <span>Report Pothole</span>
           </Link>
           <Link
             to="/potholes"
             className="btn btn-secondary"
           >
-            All Potholes →
+            My Reports →
           </Link>
         </div>
       </div>

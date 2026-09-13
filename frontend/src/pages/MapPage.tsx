@@ -1,8 +1,12 @@
 import React from 'react';
 import { PotholeMap } from '../components/map/PotholeMap';
 import { Link, useSearchParams } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 export const MapPage: React.FC = () => {
+  const { user } = useAuth();
+  const isOfficer = user?.role === 'ROLE_OFFICER';
+
   const [searchParams] = useSearchParams();
   const latParam = searchParams.get('lat');
   const lngParam = searchParams.get('lng');
@@ -34,17 +38,19 @@ export const MapPage: React.FC = () => {
         </div>
 
         <div style={{ display: 'flex', gap: '0.75rem' }}>
-          <Link
-            to="/upload"
-            className="btn btn-primary"
-            style={{ gap: '0.4rem' }}
-          >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <line x1="12" y1="5" x2="12" y2="19" />
-              <line x1="5" y1="12" x2="19" y2="12" />
-            </svg>
-            <span>Inspect Road</span>
-          </Link>
+          {!isOfficer && (
+            <Link
+              to="/upload"
+              className="btn btn-primary"
+              style={{ gap: '0.4rem' }}
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="12" y1="5" x2="12" y2="19" />
+                <line x1="5" y1="12" x2="19" y2="12" />
+              </svg>
+              <span>Report Pothole</span>
+            </Link>
+          )}
           <Link
             to="/potholes"
             className="btn btn-secondary"

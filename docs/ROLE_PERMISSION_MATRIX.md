@@ -16,8 +16,8 @@ This document establishes the canonical definition of capabilities, permissions,
 | Register Account | YES | YES | PUBLIC | `/register`, `/officer/register` | `POST /api/v1/auth/register`, `POST /api/v1/auth/officer/register` | Unauthenticated |
 | Sign In / Sign Out | YES | YES | PUBLIC | `/login` | `POST /api/v1/auth/login` | Unauthenticated |
 | View Own Profile | YES | YES | USER / OFFICER | Profile Header | `GET /api/v1/auth/me` | Authenticated principal |
-| Upload Pothole Evidence | YES | YES* | USER | `/upload` Form Submit | `POST /api/v1/potholes/detect-image` | Authenticated USER |
-| Upload Dashcam Survey | YES | YES* | USER | `/upload` Video | `POST /api/v1/potholes/detect-video` | Authenticated USER |
+| Upload Pothole Evidence | YES | NO | ROLE_USER | `/upload` Form Submit | `POST /api/v1/potholes/detect-image` | Authenticated ROLE_USER ONLY |
+| Upload Dashcam Survey | YES | NO | ROLE_USER | `/upload` Video | `POST /api/v1/potholes/detect-video` | Authenticated ROLE_USER ONLY |
 | View Own Reports | YES | YES | USER | `/potholes` Table | `GET /api/v1/potholes` | Filtered by `created_by_user_id` |
 | View Jurisdiction Inbox | NO | YES | OFFICER | `/officer/dashboard` | `GET /api/v1/officer/reports` | `hasAuthority('ROLE_OFFICER')` & `VERIFIED` & Spatial containment |
 | View Interactive Live Map | YES | YES | PUBLIC / ALL | `/map` Viewport | `GET /api/v1/potholes/map` | Bounding box spatial query |

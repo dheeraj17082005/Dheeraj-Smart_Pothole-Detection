@@ -4,6 +4,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { MemoryRouter } from 'react-router-dom';
 import { PotholesListPage } from './PotholesListPage';
 import { apiClient } from '../services/api';
+import { AuthProvider } from '../context/AuthContext';
 
 vi.mock('../services/api', () => ({
   apiClient: {
@@ -31,9 +32,11 @@ describe('PotholesListPage', () => {
     });
 
     render(
-      <MemoryRouter>
-        <PotholesListPage />
-      </MemoryRouter>
+      <AuthProvider>
+        <MemoryRouter>
+          <PotholesListPage />
+        </MemoryRouter>
+      </AuthProvider>
     );
 
     await waitFor(() => {
@@ -87,9 +90,11 @@ describe('PotholesListPage', () => {
     });
 
     render(
-      <MemoryRouter>
-        <PotholesListPage />
-      </MemoryRouter>
+      <AuthProvider>
+        <MemoryRouter>
+          <PotholesListPage />
+        </MemoryRouter>
+      </AuthProvider>
     );
 
     await waitFor(() => {
@@ -119,9 +124,11 @@ describe('PotholesListPage', () => {
     });
 
     render(
-      <MemoryRouter>
-        <PotholesListPage />
-      </MemoryRouter>
+      <AuthProvider>
+        <MemoryRouter>
+          <PotholesListPage />
+        </MemoryRouter>
+      </AuthProvider>
     );
 
     await waitFor(() => {
