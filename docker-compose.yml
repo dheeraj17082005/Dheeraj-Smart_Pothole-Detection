@@ -1,7 +1,6 @@
 services:
   postgres:
     image: postgis/postgis:16-3.4
-    container_name: pothole_postgres
     restart: unless-stopped
     environment:
       POSTGRES_DB: ${POSTGRES_DB:-potholedb}
@@ -20,7 +19,6 @@ services:
 
   minio:
     image: minio/minio:latest
-    container_name: pothole_minio
     restart: unless-stopped
     command: server /data --console-address ":9001"
     environment:
@@ -40,7 +38,6 @@ services:
 
   ai-service:
     build: ./ai-service
-    container_name: pothole_ai_service
     restart: unless-stopped
     ports:
       - "${AI_SERVICE_PORT:-8000}:8000"
@@ -53,7 +50,6 @@ services:
 
   backend:
     build: ./backend
-    container_name: pothole_backend
     restart: unless-stopped
     ports:
       - "${BACKEND_PORT:-8080}:8080"
@@ -79,7 +75,6 @@ services:
 
   frontend:
     build: ./frontend
-    container_name: pothole_frontend
     restart: unless-stopped
     ports:
       - "${FRONTEND_PORT:-80}:80"

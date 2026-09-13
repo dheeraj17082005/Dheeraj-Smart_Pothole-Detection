@@ -28,9 +28,9 @@ ENVEOF
   fi
 fi
 
-# 3. Clean Container Conflicts
-echo "[INFO] Ensuring clean container environment..."
-docker rm -f pothole_postgres pothole_minio pothole_backend pothole_ai_service pothole_frontend >/dev/null 2>&1 || true
+# 3. Clean Project Containers
+echo "[INFO] Ensuring clean project environment..."
+docker-compose down >/dev/null 2>&1 || true
 
 # 4. Build and Start Application Services
 echo "[INFO] Launching PotholeX services via Docker Compose..."
