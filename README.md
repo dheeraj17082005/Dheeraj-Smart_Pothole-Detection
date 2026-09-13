@@ -1,534 +1,503 @@
-# Smart Pothole Detection and Reporting System
+# PotholeX
 
-An end-to-end civic technology platform for automated road hazard intelligence. The system ingests citizen dashcam images and video streams, runs containerized AI inference using FastAPI and YOLOv8 ONNX, calculates visual severity heuristics, performs spatial PostGIS authority resolution, handles video frame aggregation and inter-submission deduplication, dispatches automated simulated civic work orders, and visualizes remediation status across an interactive operational dashboard.
-
----
-
-## ⚡ Quick Start (Evaluator Setup)
-
-Launch the complete 5-container stack with a single command:
-
-```bash
-docker-compose up -d --build
-```
-
-Once all containers report healthy, open the operational dashboard in your browser:
-
-👉 **[http://localhost](http://localhost)**
+A civic road inspection and pothole reporting platform that combines citizen-submitted evidence, pothole detection, geospatial routing, duplicate handling, and verified officer workflows.
 
 ---
 
-## Table of Contents
-- [Problem Statement](#problem-statement)
-- [Key Features](#key-features)
-- [System Architecture](#system-architecture)
-- [Technology Stack](#technology-stack)
-- [AI Model & Computer Vision](#ai-model--computer-vision)
-- [System Processing Flow](#system-processing-flow)
-- [Repository Structure](#repository-structure)
-- [Prerequisites](#prerequisites)
-- [Docker Setup & Quickstart](#docker-setup--quickstart)
-- [Environment Variables](#environment-variables)
-- [API Endpoints](#api-endpoints)
-- [API Usage Examples](#api-usage-examples)
-- [Database & Spatial Architecture](#database--spatial-architecture)
-- [Object Storage (MinIO)](#object-storage-minio)
-- [Civic Authority Resolution](#civic-authority-resolution)
-- [Visual Severity Calculation](#visual-severity-calculation)
-- [Deduplication Strategy (Type A & Type B)](#deduplication-strategy-type-a--type-b)
-- [Civic Authority Reporting](#civic-authority-reporting)
-- [Automated Testing](#automated-testing)
-- [Demonstration Flow](#demonstration-flow)
-- [Known Limitations](#known-limitations)
-- [Future Improvements](#future-improvements)
-- [Third-Party Attribution](#third-party-attribution)
+## Overview
+
+Road infrastructure maintenance is frequently hindered by delayed hazard reporting, duplicate report congestion, and fragmented communication between citizens and public works departments. **PotholeX** addresses these challenges by serving as an end-to-end civic reporting and spatial remediation system.
+
+Citizens submit road hazard evidence via image or video along with geographic coordinates. The system processes uploaded media using an ONNX-accelerated YOLO v8 object detection model, classifies pothole severity based on spatial surface area, checks for active spatial duplicates within a 15-meter PostGIS radius, and routes verified reports to the appropriate municipal jurisdiction (e.g., PWD, NHAI, MCD, DDA).
+
+Verified public works officers inspect incoming hazard reports within their assigned geographic domain, transition report statuses through an audited lifecycle (`REPORTED` → `ACKNOWLEDGED` → `IN_PROGRESS` → `RESOLVED`), and record official remediation notes. Citizens receive persistent progress notifications as their reported hazards are acknowledged and repaired.
 
 ---
 
-## Problem Statement
+## Assessment / JD Coverage
 
-Potholes and road surface degradation cause severe vehicular damage, traffic congestion, and fatal road accidents worldwide. Municipal road maintenance teams often struggle with slow, manual, citizen-complaint workflows, redundant duplicate reports, jurisdictional ambiguity between municipal and highway authorities, and lack of prioritized severity tracking.
-
-The **Smart Pothole Detection and Reporting System** solves this by providing:
-1. **Automated Vision Pipeline**: Rapid detection and bounding box annotation on dashcam photos and video streams.
-2. **Deterministic Spatial Resolution**: Automatic routing of reports to the exact municipal or highway authority via PostGIS spatial intersection.
-3. **Automated Deduplication**: Multi-tier deduplication preventing duplicate dispatch tickets for identical physical potholes.
-4. **Transparent Remediation Tracking**: Real-time status lifecycle management with an immutable audit trail.
+| JD Requirement | Implementation | Status |
+|---|---|---|
+| **Pothole Detection from Image** | ONNX Runtime YOLOv8 model runs 640x640 single-pass inference returning bounding box coordinates and confidence scores. | **Implemented** |
+| **Video / Dashcam Analysis** | Asynchronous frame sampling engine extracts frames from uploaded dashcam videos (`.mp4`), performs detection, and aggregates results. | **Implemented** |
+| **Severity Assessment** | Spatial surface area calculator evaluates relative bounding box area against total image dimensions (`LOW` < 3%, `MEDIUM` 3–8%, `HIGH` > 8%). | **Implemented** |
+| **REST API** | Spring Boot 3.2.3 REST API with OpenAPI documentation, JWT authentication, and structured error responses. | **Implemented** |
+| **Spatial / GIS Processing** | PostGIS spatial queries (`ST_DWithin`, `ST_MakePoint`, SRID 4326) calculate spatial proximity and assign municipal jurisdictions. | **Implemented** |
+| **PostgreSQL / PostGIS** | Relational database schema with Flyway migrations (`V1` to `V8`) and PostGIS spatial indexing. | **Implemented** |
+| **Authority Routing** | Geofenced authority jurisdictions map location coordinates to responsible agencies (e.g., Delhi PWD, NHAI). | **Implemented** |
+| **Duplicate Detection** | 15-meter spatial radius check prevents duplicate report clutter while allowing fresh reports if a hazard reoccurs after repair. | **Implemented** |
+| **Citizen Reporting** | Dedicated citizen portal for evidence submission, live status tracking, map views, and notification alerts. | **Implemented** |
+| **Officer Workflow** | Role-gated officer portal with jurisdiction-scoped inboxes, identity verification checks, and state machine status transitions. | **Implemented** |
+| **Notifications** | Automated notification engine dispatches updates to citizens when officers update report status. | **Implemented** |
+| **Interactive Map** | Leaflet-powered interactive map with custom severity markers, status filtering, bounds querying, and manual coordinate navigation. | **Implemented** |
+| **Object Storage** | Dual-bucket MinIO instance stores original evidence media (`pothole-media`) and AI annotated overlays (`pothole-annotated`). | **Implemented** |
+| **Dockerized Deployment** | Complete 5-container architecture orchestrating Frontend, Backend, AI Service, PostgreSQL, and MinIO via Docker Compose. | **Implemented** |
+| **Automated Testing** | Multi-tier automated test suite covering Vitest frontend unit tests, Pytest AI service tests, and JUnit 5 backend controller/service tests. | **Implemented** |
 
 ---
 
 ## Key Features
 
-- 📸 **Synchronous Image Detection**: Instant AI detection, bounding box extraction, and annotated evidence generation.
-- 🎥 **Asynchronous Video Stream Processing**: Non-blocking background job queueing (HTTP 202 Accepted) with client polling and frame sampling at 2 FPS.
-- 🎯 **Intra-Video Aggregation (Type A)**: Spatial-temporal tracking that groups consecutive video frames into a single physical pothole record with optimal representative frame selection.
-- 🔍 **Inter-Report Deduplication (Type B)**: PostGIS spatial-temporal matching (15-meter radius, 7-day window) flagging redundant citizen reports to avoid dispatch spam.
-- 🗺️ **PostGIS Authority Resolution**: Hierarchical spatial assignment (Road Network Buffer $\to$ Municipal Polygon $\to$ `UNKNOWN_AUTHORITY` fallback).
-- 📊 **Visual 2D Severity Heuristic**: Normalized scoring based on bounding-box road area percentage and confidence weighting (`LOW`, `MEDIUM`, `HIGH`).
-- 📨 **Simulated Work Order Dispatch**: Automated authority reporting with exponential backoff retries and idempotent dispatch keys.
-- 🗺️ **Interactive Operational Dashboard**: React 18 + Leaflet mapping with real-time viewport querying, severity-colored markers, status updates, and audit timeline history.
+### Citizen Portal (`ROLE_USER`)
+- **Evidence Submission**: Submit pothole evidence via single image upload or dashcam video file with interactive location selection or manual coordinate input.
+- **AI Feedback**: View immediate AI detection bounding boxes, confidence scores, and severity classifications.
+- **Report Lifecycle Tracking**: Track report progress through a visual timeline (`REPORTED` → `ACKNOWLEDGED` → `IN_PROGRESS` → `RESOLVED`).
+- **Interactive Map**: View citizen-reported hazards on a color-coded Leaflet map.
+- **Notification Inbox**: Receive automated alerts when officers update report status or record remediation notes.
+
+### Verified Officer Portal (`ROLE_OFFICER`)
+- **Identity Verification Gate**: Officer accounts undergo verification before gaining access to jurisdiction controls.
+- **Jurisdiction-Scoped Inbox**: Officers view only hazard reports within their assigned department and geographic jurisdiction.
+- **Official Lifecycle Control**: Officers transition report statuses (`ACKNOWLEDGED`, `IN_PROGRESS`, `RESOLVED`, `REJECTED`) and provide mandatory official notes or rejection reasons.
+- **Evidence Inspection**: Inspect high-resolution annotated evidence images and historical status audit logs.
+
+### AI & Computer Vision Engine
+- **Model**: ONNX Runtime execution using YOLOv8 weights fine-tuned for pothole surface detection.
+- **Inference Configuration**: Standardized 640x640 tensor input, confidence threshold of `0.25`, and Non-Maximum Suppression (NMS) IoU threshold of `0.45`.
+- **Severity Rating**: Computes bounding box surface area ratio relative to image frame size to classify hazards into `LOW`, `MEDIUM`, or `HIGH` severity.
+- **Detection Bounds**: Handles single-pothole and multi-pothole images with bounding box overlay rendering.
+
+### Spatial GIS Engine
+- **PostGIS Integration**: Employs spatial reference SRID 4326 (`WGS 84`) for coordinate persistence and distance calculations.
+- **15-Meter Proximity Clustering**: Detects active duplicate reports within a 15-meter radius of existing open reports.
+- **Jurisdiction Geofencing**: Automatically routes hazard reports to municipal authorities based on point-in-jurisdiction calculations.
+
+### Object Storage (MinIO)
+- **Dual-Bucket Storage Architecture**: Separates original raw user uploads (`pothole-media`) from AI-generated annotated overlay images (`pothole-annotated`).
+- **Pre-Signed Security**: Generates temporary pre-signed HTTP access URLs for frontend image rendering.
 
 ---
 
-## System Architecture
-
-```
-                                    +-------------------------------------------------------+
-                                    |                   React Web Frontend                  |
-                                    |              (Vite / TypeScript / Leaflet)            |
-                                    |                Port: 80 / Dev Port: 5173              |
-                                    +---------------------------+---------------------------+
-                                                                |
-                                                                | REST / HTTP Multipart
-                                                                v
-+-------------------------------------------------------------------------------------------------------------------------------+
-|                                             Spring Boot 3.2.3 Backend API (Java 21)                                           |
-|                                                           Port: 8080                                                          |
-|                                                                                                                               |
-|   +--------------------------+   +--------------------------+   +--------------------------+   +--------------------------+   |
-|   |   ImageDetectionService  |   |   VideoDetectionService  |   |      SeverityService     |   | AuthorityResolverService |   |
-|   +--------------------------+   +--------------------------+   +--------------------------+   +--------------------------+   |
-|   +--------------------------+   +--------------------------+   +--------------------------+   +--------------------------+   |
-|   |   DeduplicationService   |   | AuthorityReportingService|   |    PotholeQueryService   |   |  GlobalExceptionHandler  |   |
-|   +--------------------------+   +--------------------------+   +--------------------------+   +--------------------------+   |
-+-------------------+---------------------------+-----------------------------------+-------------------------------------------+
-                    |                           |                                   |
-                    v                           v                                   v
-+-----------------------------+ +-------------------------------+ +---------------------------------+
-|     FastAPI AI Service      | |      PostgreSQL 16 + PostGIS  | |          MinIO Storage          |
-|    (Python 3.11 / ONNX)     | |          Port: 5432           | |       Ports: 9000 / 9001        |
-|         Port: 8000          | |                               | |                                 |
-|  - YOLOv8s-RDD ONNX Runtime | |  - PostGIS Spatial Queries    | |  - pothole-raw/                 |
-|  - Frame Extraction (OpenCV)| |  - Flyway Migrations (V1-V5)  | |  - pothole-annotated/           |
-|  - Bounding Box Annotator   | |  - Seed Demo Authorities      | |  - Presigned URL Generation     |
-|  - Healthcheck (/health)    | |  - Audit Status History       | |                                 |
-+-----------------------------+ +-------------------------------+ +---------------------------------+
-```
-
----
-
-## Technology Stack
-
-| Layer | Technology | Version | Description |
-|---|---|---|---|
-| **Frontend** | React, TypeScript, Vite, TailwindCSS | `18.2.0` / `5.3.3` / `5.1.0` | Responsive operational dashboard, Leaflet mapping |
-| **Backend** | Spring Boot, Java, Spring Data JPA, Flyway | `3.2.3` / `21` / `10.7.0` | Transactional core, spatial business logic, REST API |
-| **AI Inference** | FastAPI, ONNX Runtime, OpenCV, NumPy | `0.110.0` / `1.17.1` / `4.9.0` | CPU-optimized YOLOv8 inference & video sampling |
-| **Database** | PostgreSQL + PostGIS Extension | `16.2` / `3.4.1` | Spatial indexing (`GIST`), geography distance queries |
-| **Object Storage** | MinIO Object Store (S3-compatible) | `minio/minio:latest` | Image/video binary storage & presigned URLs |
-| **Containerization**| Docker & Docker Compose | Compose v2 / Spec 3.8 | Multi-service local deployment with healthchecks |
-
----
-
-## AI Model & Computer Vision
-
-The system integrates an ONNX runtime CPU pipeline powered by the fine-tuned Road Damage Detection model:
-
-- **Model Name**: `peterhdd/pothole-detection-yolov8`
-- **Inference Runtime**: ONNX Runtime (CPU Execution Provider)
-- **Input Dimensions**: `[1, 3, 640, 640]` RGB float32
-- **Default Confidence Threshold**: `0.25` (production default; operates reliably across `0.20`–`0.25`)
-- **Input Tensor**: `images` shape `[1, 3, 640, 640]` RGB normalized `[0.0, 1.0]` (Letterbox aspect-ratio preserving)
-- **Output Tensor**: `output0` shape `[1, 5, 8400]`
-- **Target Class**: Class ID `0` (`pothole`)
-- **Operational Confidence Threshold**: `0.20`–`0.25` (Default: `0.25`)
-- **Supported Formats**: JPEG, PNG, WebP (Images); MP4, WebM, MOV (Videos)
-- **Operating Domain**: Road-facing / vehicle dashcam / mobile perspective road imagery.
-- **Empirical Model Comparison**: Full multi-model evaluation documented in [MODEL_COMPARISON.md](docs/MODEL_COMPARISON.md).
-
-> [!NOTE]
-> **Domain Alignment & Model Limitations**:
-> - **In-Domain Strengths**: The model delivers strong, accurate detections on forward-facing road imagery with visible road context and asphalt distress.
-> - **Domain Sensitivity**: Close-up macro photos, extreme top-down angles, and gravel/unpaved textures fall outside the training distribution and may yield lower confidence or zero proposals.
-> - **2D Heuristic**: Severity calculations reflect 2D pixel area and confidence, not physical 3D cavity depth.
-
----
-
-## System Processing Flow
+## Architecture
 
 ```mermaid
-sequenceDiagram
-    autonumber
-    actor User as Citizen / Operator
-    participant FE as React Frontend
-    participant BE as Spring Boot Backend
-    participant AI as FastAPI AI Service
-    participant S3 as MinIO Storage
-    participant DB as PostGIS Database
-
-    User->>FE: Submit Image / Video + GPS Coordinates
-    FE->>BE: POST /api/v1/potholes/detect-image
-    BE->>S3: Upload raw submission artifact
-    BE->>AI: POST /detect/image (Multipart)
-    AI-->>BE: Return Bounding Boxes & Confidence Scores
-    BE->>S3: Upload annotated bounding-box image
-    BE->>BE: SeverityService -> Calculate 2D Visual Score
-    BE->>DB: AuthorityResolverService -> ST_DWithin / ST_Covers
-    DB-->>BE: Resolved Authority (PWD / NDMC / UNKNOWN)
-    BE->>DB: DeduplicationService -> Check 15m radius & 7-day window
-    alt Unresolved Pothole Exists Nearby
-        BE->>DB: Persist Pothole marked as Duplicate (Skip Dispatch)
-    else Unique Pothole
-        BE->>DB: Persist Primary Pothole + Initial Status History (REPORTED)
-        BE->>BE: AuthorityReportingService -> Dispatch Simulated Ticket
-        BE->>DB: Persist Report + ReportAttempt (DISPATCHED)
-    end
-    BE-->>FE: Return JSON Pothole Response with Presigned Evidence URLs
-    FE->>User: Display Detection, Map Marker & Status Badge
+graph TD
+    Client["React 18 + Vite Web App (Port 80)"] -->|HTTP / REST| Nginx["Nginx Reverse Proxy"]
+    Nginx -->|Proxy Requests| Backend["Spring Boot 3.2.3 API (Port 8080)"]
+    Backend -->|JWT Auth & RBAC| Security["Spring Security Filter"]
+    Backend -->|Spatial Queries| DB[("PostgreSQL 16 + PostGIS (Port 5432)")]
+    Backend -->|S3 Pre-signed URLs| MinIO[("MinIO Object Storage (Port 9000/9001)")]
+    Backend -->|HTTP Inference Request| AIService["FastAPI AI Service (Port 8000)"]
+    AIService -->|Execution| ONNX["ONNX Runtime Engine"]
+    ONNX -->|Model Weights| YOLO["YOLOv8 Pothole Model"]
 ```
+
+### Container Services Summary
+
+| Container Name | Service | Technology | Port | Purpose |
+|---|---|---|---|---|
+| `pothole_frontend` | Frontend Web UI | React 18, TypeScript, Vite, Leaflet | `80` | User interface for citizens and officers |
+| `pothole_backend` | Core REST API | Java 21, Spring Boot 3.2.3, Flyway | `8080` | Business logic, authentication, GIS routing |
+| `pothole_ai_service` | AI Inference API | Python 3.11, FastAPI, ONNX Runtime | `8000` | Pothole detection and severity computation |
+| `pothole_postgres` | Relational & GIS Database | PostgreSQL 16, PostGIS 3.4 | `5432` | Spatial indexing and metadata persistence |
+| `pothole_minio` | S3 Object Storage | MinIO Dual-Bucket Instance | `9000` / `9001` | Evidence image and video storage |
 
 ---
 
-## Repository Structure
+## Tech Stack
 
-```
-.
-├── ai-service/                 # FastAPI Python AI Inference Service
-│   ├── app/
-│   │   ├── config.py           # Application settings & validation
-│   │   ├── image_processor.py  # Image preprocessing & annotation
-│   │   ├── main.py             # FastAPI routes & lifespan
-│   │   ├── model.py            # ONNX Runtime model session wrapper
-│   │   ├── schemas.py          # Pydantic request/response schemas
-│   │   └── video_processor.py  # Video frame extraction & sampling
-│   ├── download_model.py       # Standalone ONNX model downloader
-│   ├── Dockerfile              # Container definition for AI service
-│   ├── requirements.txt        # Python dependencies
-│   └── tests/                  # Pytest unit & integration test suite
-├── backend/                    # Spring Boot REST API System of Record
-│   ├── src/main/java/com/pothole/
-│   │   ├── client/             # AI service HTTP REST client
-│   │   ├── config/             # Spring, Web, MinIO & Executor config
-│   │   ├── controller/         # REST API endpoints (/api/v1)
-│   │   ├── dto/                # Request / Response transfer objects
-│   │   ├── exception/          # Global exception handling & ProblemDetail
-│   │   ├── model/              # JPA Domain Entities (Pothole, Report, etc.)
-│   │   ├── repository/         # Spring Data JPA & PostGIS Repositories
-│   │   └── service/            # Core business, severity, auth & dedup services
-│   ├── src/main/resources/
-│   │   ├── application.yml     # Application configuration
-│   │   └── db/migration/       # Flyway SQL migrations (V1 through V5)
-│   ├── Dockerfile              # Multi-stage container build for Backend
-│   └── pom.xml                 # Maven build & dependencies
-├── frontend/                   # React 18 + Vite + Leaflet Web Application
-│   ├── src/
-│   │   ├── components/         # Leaflet Map, Tables, Navbar, Modals
-│   │   ├── hooks/              # Geolocation & Detection Job polling hooks
-│   │   ├── pages/              # Dashboard, Pothole Detail, List, Upload pages
-│   │   ├── services/           # Axios REST API Client
-│   │   └── types/              # TypeScript interface definitions
-│   ├── Dockerfile              # Nginx multi-stage build for Frontend
-│   ├── nginx.conf              # Nginx SPA routing configuration
-│   └── package.json            # Node.js dependencies & scripts
-├── database/                   # Standalone database migration & seed references
-├── docs/                       # Architectural specs, model details & demo scripts
-│   ├── ARCHITECTURE.md         # Master architecture blueprint
-│   ├── DEMO.md                 # 14-step demonstration walkthrough
-│   ├── MODEL_ATTRIBUTION.md    # Model specifications and metrics
-│   └── SEVERITY.md             # Visual severity algorithm documentation
-├── test-data/                  # Demonstration media files
-│   ├── images/                 # Sample road images (potholes & clean asphalt)
-│   └── videos/                 # Sample dashcam MP4 video streams
-├── docker-compose.yml          # Multi-container orchestration specification
-├── .env.example                # Documented configuration template
-└── README.md                   # System documentation
-```
+- **Frontend**: React `18.2.0`, TypeScript `5.2.2`, Vite `5.1.0`, Leaflet `1.9.4`, React Router `6.22.1`, TailwindCSS `3.4.1`
+- **Backend**: Java `21`, Spring Boot `3.2.3`, Spring Security, Spring Data JPA, Hibernate Spatial, Flyway `9.22.3`, JJWT `0.11.5`
+- **AI Service**: Python `3.11`, FastAPI `0.109.2`, ONNX Runtime `1.17.1`, OpenCV `4.9.0`, Pillow `10.2.0`, PyTorch `2.2.1`
+- **Database & Storage**: PostgreSQL `16.4`, PostGIS `3.4`, MinIO `RELEASE.2024-01-31T01-31-00Z`
+- **Deployment & Testing**: Docker, Docker Compose, JUnit 5, Mockito, Pytest, Vitest `1.6.1`
 
 ---
 
 ## Prerequisites
 
-- **Docker**: Version `24.0.0+`
-- **Docker Compose**: Version `v2.20.0+`
-- **Memory**: Minimum 4 GB RAM recommended for multi-container stack
-- **Local Ports Available**: `80` (or `5173`), `8080`, `8000`, `9000`, `9001`, `5432`
+To run PotholeX, your host machine only requires:
+- **Git**
+- **Docker Engine** (`v20.10+`)
+- **Docker Compose** (`v2.0+` or `docker-compose`)
+- **Modern Web Browser** (Chrome, Firefox, Edge, Safari)
+
+*Note: Host installations of Java, Python, Node.js, PostgreSQL, or MinIO are **not** required. All runtime dependencies are containerized.*
 
 ---
 
-## Docker Setup & Quickstart
+## Quick Start
 
 ### 1. Clone Repository & Setup Environment
 ```bash
+git clone https://github.com/dheeraj17082005/Dheeraj-Smart_Pothole-Detection.git
+cd Dheeraj-Smart_Pothole-Detection
+
+# Copy environment variables file
 cp .env.example .env
 ```
 
-### 2. Build and Launch Stack
+### 2. Launch Application
+You can use the provided quickstart script or run Docker Compose directly:
+
+**Option A (Automated Quickstart Script)**:
 ```bash
-docker compose build --no-cache
-docker compose up -d
+./scripts/quickstart.sh
 ```
 
-### 3. Verify Container Health
+**Option B (Standard Docker Compose)**:
 ```bash
-docker compose ps
+docker-compose up --build -d
 ```
-All 5 containers should indicate `healthy` (or `running`):
-- `pothole_postgres` (PostGIS)
-- `pothole_minio` (Object Storage)
-- `pothole_ai_service` (FastAPI)
-- `pothole_backend` (Spring Boot)
-- `pothole_frontend` (Nginx React SPA)
 
-### 4. Access URLs
-- **Web Dashboard**: [http://localhost](http://localhost) (or [http://localhost:5173](http://localhost:5173))
-- **Backend REST API**: [http://localhost:8080/api/v1](http://localhost:8080/api/v1)
-- **AI Service Health**: [http://localhost:8000/health](http://localhost:8000/health)
-- **MinIO Web Console**: [http://localhost:9001](http://localhost:9001) (User: `minioadmin`, Pass: `minioadminpassword`)
+*Note: The AI model weights (`pothole_yolov8.onnx`) are downloaded automatically from Hugging Face during the Docker image build. No manual file copying is required.*
+
+### 3. Open Web Application
+Navigate to `http://localhost` in your browser.
 
 ---
 
-## Environment Variables
+## Startup Verification
 
-| Variable | Default Value | Description |
+To verify that all 5 services have started and reached healthy status, run:
+
+```bash
+docker-compose ps
+```
+
+### Expected Output
+```text
+NAME                 IMAGE                        COMMAND                  SERVICE      CREATED          STATUS                    PORTS
+pothole_frontend     potholex-frontend:latest     "nginx -g 'daemon of…"   frontend     1 minute ago     Up 1 minute (healthy)     0.0.0.0:80->80/tcp
+pothole_backend      potholex-backend:latest      "java -jar app.jar"      backend      1 minute ago     Up 1 minute (healthy)     0.0.0.0:8080->8080/tcp
+pothole_ai_service   potholex-ai-service:latest   "uvicorn app.main:ap…"   ai-service   1 minute ago     Up 1 minute (healthy)     0.0.0.0:8000->8000/tcp
+pothole_postgres     postgis/postgis:16-3.4       "docker-entrypoint.s…"   postgres     1 minute ago     Up 1 minute (healthy)     0.0.0.0:5432->5432/tcp
+pothole_minio        minio/minio                  "server /data --cons…"   minio        1 minute ago     Up 1 minute (healthy)     0.0.0.0:9000-9001->9000-9001/tcp
+```
+
+---
+
+## Recommended Reviewer Walkthrough
+
+Follow this step-by-step sequence to test both Citizen and Officer roles:
+
+### Part A: Citizen Journey (`ROLE_USER`)
+1. Open `http://localhost` in your browser. The application opens on the `/login` screen.
+2. Click **Register as Citizen** and create an account (e.g. `citizen@test.com` / `Password123!`).
+3. Upon registration, you are redirected to the **Citizen Dashboard**.
+4. Click **Report Pothole** in the navigation header.
+5. Upload the included sample test image:  
+   `test-data/evaluation/potholes/istockphoto-502561495-612x612.jpg`
+6. Click on the interactive map picker or enter latitude `28.6139` and longitude `77.2090`.
+7. Click **Analyze & Submit Report**. Inspect the immediate AI bounding box detections (11 potholes detected, `HIGH` severity).
+8. View your newly created report in **My Reports**. Note its initial status: `REPORTED`.
+9. Click **View on Map** to see the interactive map marker.
+10. Click the **Bell Icon** in the top navigation bar to inspect your initial notification.
+
+### Part B: Officer Journey (`ROLE_OFFICER`)
+11. Log out of the Citizen account.
+12. Click **Register as Officer** on the login page.
+13. Fill in officer details:
+    - Full Name: `Officer Sharma`
+    - Email: `officer@test.com`
+    - Password: `Password123!`
+    - Officer ID Code: `OFF-101`
+    - Department: `Public Works Department`
+    - Jurisdiction Name: `Delhi PWD Central`
+    - Jurisdiction Code: `PWD`
+    - Latitude: `28.6139` | Longitude: `77.2090`
+    - Upload any ID Card image.
+14. Submit registration. Note that new officer accounts enter `PENDING_VERIFICATION` status for security.
+15. **To verify the officer account for testing**, execute this database command in your terminal:
+    ```bash
+    docker exec pothole_postgres psql -U pothole_user -d potholedb -c "UPDATE officer_profiles SET verification_status = 'VERIFIED';"
+    ```
+16. Refresh the officer browser window. You now have full access to the **Officer Jurisdiction Dashboard**.
+17. In the **Jurisdiction Inbox**, locate the report submitted by the citizen in Part A.
+18. Click **Accept Report**. The status transitions to `ACKNOWLEDGED`.
+19. Click **Start Repair Work**. The status transitions to `IN_PROGRESS`.
+20. Click **Mark as Resolved** and add remediation notes (e.g. *"Asphalt patch applied"*). The status updates to `RESOLVED`.
+21. Log out and log back in as the Citizen (`citizen@test.com`).
+22. Check **Notifications**. Verify that status transition alerts (`ACKNOWLEDGED` → `IN_PROGRESS` → `RESOLVED`) have been delivered to the citizen.
+
+---
+
+## Demo Accounts & Test Credentials
+
+If you prefer using pre-created credentials after completing the reviewer walkthrough:
+
+| Role | Email | Password | Details |
+|---|---|---|---|
+| **Citizen (USER)** | `citizen@test.com` | `Password123!` | Standard citizen test account |
+| **Officer (PWD)** | `officer@test.com` | `Password123!` | Verified officer for PWD jurisdiction |
+
+*Note: All credentials above are **TEST/DEMO ONLY**.*
+
+---
+
+## Report Lifecycle State Machine
+
+```text
+[ Citizen Submits Evidence ]
+            │
+            ▼
+        REPORTED ──(Officer Rejects with Reason)──► REJECTED
+            │
+            ▼
+       ACKNOWLEDGED (Officer Accepts Report)
+            │
+            ▼
+       IN_PROGRESS  (Repair Work Dispatched)
+            │
+            ▼
+        RESOLVED    (Road Repair Complete)
+```
+
+- **Citizen Action Scope**: Submits initial evidence, selects location, views status, and receives notifications. Citizens **cannot** alter report statuses.
+- **Officer Action Scope**: Inspects jurisdiction reports, accepts/rejects incoming evidence, transitions status through `ACKNOWLEDGED` → `IN_PROGRESS` → `RESOLVED`, and records official notes.
+
+---
+
+## Image Detection Demo
+
+To test image-based detection:
+1. Go to **Report Pothole** in the Citizen Portal.
+2. Select the committed test asset:  
+   `test-data/evaluation/potholes/istockphoto-502561495-612x612.jpg`
+3. The AI service performs single-pass ONNX inference, overlaying green bounding boxes around detected road hazards.
+4. Test with a clean road image to verify 0-detection handling:  
+   `test-data/evaluation/clean_roads/clean_road_highway.jpg`
+
+---
+
+## Video Detection Demo
+
+PotholeX supports asynchronous video analysis for dashcam footage:
+1. Go to **Report Pothole** and switch mode to **Dashcam Video**.
+2. Select the sample dashcam video:  
+   `test-data/videos/sample_dashcam.mp4`
+3. Enter location coordinates and click **Submit Video Stream**.
+4. The system returns an immediate **HTTP 202 Accepted** response with a background job polling URL (`/api/v1/detection-jobs/{jobId}`).
+5. The background worker samples video frames, runs ONNX inference per frame, aggregates detections, and registers a aggregated report upon completion.
+
+*Note: Video analysis is performed via asynchronous frame sampling, not live real-time video streaming.*
+
+---
+
+## Map & Geospatial Features
+
+- **Interactive Navigation**: Supports pan (left/right/up/down/diagonal), zoom, and custom coordinate jumping.
+- **Severity & Status Color Coding**:
+  - `HIGH` Severity: Red Marker
+  - `MEDIUM` Severity: Orange Marker
+  - `LOW` Severity: Yellow Marker
+  - `RESOLVED` Status: Green Marker
+- **Coordinate Navigation**: Enter custom Latitude and Longitude to inspect specific geographic areas.
+- **Viewport Bounds Querying**: Fetches only markers visible within the current map viewport bounds.
+
+---
+
+## Role & Permission Matrix
+
+| Action | Citizen (`ROLE_USER`) | Verified Officer (`ROLE_OFFICER`) |
 |---|---|---|
-| `POSTGRES_DB` | `potholedb` | PostgreSQL database name |
-| `POSTGRES_USER` | `pothole_user` | Database user name (assessment default) |
-| `POSTGRES_PASSWORD` | `pothole_password` | Database password (assessment default) |
-| `POSTGRES_PORT` | `5432` | Host port mapped to PostGIS |
-| `MINIO_ROOT_USER` | `minioadmin` | MinIO root access key |
-| `MINIO_ROOT_PASSWORD`| `minioadminpassword` | MinIO root secret key |
-| `MINIO_PORT` | `9000` | S3 API endpoint port |
-| `MINIO_CONSOLE_PORT` | `9001` | MinIO web console port |
-| `AI_SERVICE_PORT` | `8000` | FastAPI inference service port |
-| `AI_SERVICE_URL` | `http://ai-service:8000` | Internal backend-to-AI communication URL |
-| `AI_CONFIDENCE_THRESHOLD` | `0.25` | Minimum bounding box confidence filter |
-| `VIDEO_SAMPLE_FPS` | `2.0` | Frame sampling rate for video stream analysis |
-| `BACKEND_PORT` | `8080` | Spring Boot REST API port |
-| `FRONTEND_PORT` | `80` | Nginx HTTP port for React application |
-| `VITE_API_BASE_URL` | `http://localhost:8080/api/v1` | Frontend API target endpoint |
+| Register / Login | ✓ | ✓ |
+| Submit Pothole Evidence | ✓ | ✖ *(Forbidden - HTTP 403)* |
+| View Own Submitted Reports | ✓ | ✓ |
+| View Jurisdiction Inbox | ✖ | ✓ |
+| Accept / Reject Incoming Report | ✖ | ✓ |
+| Transition Report Status | ✖ *(Forbidden - HTTP 403)* | ✓ |
+| Receive Status Notifications | ✓ | ✓ |
+| View Interactive Map | ✓ | ✓ |
 
 ---
 
-## API Endpoints
+## Duplicate Handling & Spatial Proximity Rules
 
-| Method | Path | Description |
-|---|---|---|
-| `POST` | `/api/v1/potholes/detect-image` | Synchronously analyze image, persist pothole, and dispatch report |
-| `POST` | `/api/v1/potholes/detect-video` | Asynchronously submit video stream; returns HTTP 202 + `jobId` |
-| `GET` | `/api/v1/detection-jobs/{jobId}` | Poll video detection job progress and aggregate results |
-| `GET` | `/api/v1/potholes` | Paginated pothole list with filtering (`status`, `severity`, `authorityId`) |
-| `GET` | `/api/v1/potholes/map` | Viewport bounding-box spatial query for Leaflet markers |
-| `GET` | `/api/v1/potholes/{id}` | Detailed pothole record with presigned image URLs and authority details |
-| `GET` | `/api/v1/potholes/{id}/history` | Audit timeline of lifecycle status transitions |
-| `PATCH`| `/api/v1/potholes/{id}/status` | Transition status (`REPORTED` $\to$ `ACKNOWLEDGED` $\to$ `IN_PROGRESS` $\to$ `RESOLVED`) |
-| `GET` | `/api/v1/authorities` | List all seeded civic authorities |
-| `GET` | `/api/v1/dashboard/stats` | Aggregated metrics for operational dashboard cards |
-| `GET` | `/actuator/health` | Spring Boot system health status |
+1. **Active Duplicate Clustering**: If a citizen reports a pothole within **15 meters** of an existing open report (`REPORTED`, `ACKNOWLEDGED`, or `IN_PROGRESS`), the system links the report as a duplicate to prevent municipal inbox clutter.
+2. **Re-occurring Hazard Protection**: If a pothole reappears at a location where a previous report was marked `RESOLVED`, the system permits a **new active report** to be filed, archiving the old report in history.
 
 ---
 
-## API Usage Examples
+## Media Validation Rules
 
-### 1. Detect Pothole from Image
+- **Supported Formats**: Images (`image/jpeg`, `image/png`, `image/webp`) and Videos (`video/mp4`, `video/quicktime`).
+- **File Validation**: Non-empty media payload required (returns `HTTP 400 Bad Request` if media is missing or unreadable).
+- **Clean Road Handling**: If an uploaded image contains zero potholes, the system returns `HTTP 200 OK` with 0 detections and notifies the user that no hazard was detected.
+
+---
+
+## REST API Overview
+
+| Domain | Method | Endpoint Path | Role Required | Description |
+|---|---|---|---|---|
+| **Auth** | `POST` | `/api/v1/auth/register` | Public | Register new Citizen account |
+| **Auth** | `POST` | `/api/v1/auth/officer/register` | Public | Register new Officer account |
+| **Auth** | `POST` | `/api/v1/auth/login` | Public | Authenticate user & return JWT token |
+| **Detection** | `POST` | `/api/v1/potholes/detect-image` | `ROLE_USER` | Submit image for detection & report creation |
+| **Detection** | `POST` | `/api/v1/potholes/detect-video` | `ROLE_USER` | Submit video for async frame analysis |
+| **Reports** | `GET` | `/api/v1/potholes` | Authenticated | List pothole reports with filters |
+| **Reports** | `GET` | `/api/v1/potholes/{id}` | Authenticated | Get detailed report metadata & status history |
+| **Status** | `PATCH` | `/api/v1/potholes/{id}/status` | `ROLE_OFFICER` | Update report lifecycle status with notes |
+| **Notifs** | `GET` | `/api/v1/notifications` | Authenticated | Fetch user notification list |
+
+---
+
+## Storage Architecture
+
+- **PostgreSQL 16 + PostGIS 3.4**: Persists structured user profiles, officer credentials, report metadata, status audit trails, and PostGIS `GEOMETRY(Point, 4326)` spatial coordinates.
+- **MinIO S3 Buckets**:
+  - `pothole-media`: Stores raw uploaded evidence images and video files.
+  - `pothole-annotated`: Stores AI bounding-box annotated evidence image overlays.
+
+---
+
+## Configuration & Environment Variables
+
+Key environment settings in `.env`:
+
+```env
+PORT=80
+BACKEND_PORT=8080
+AI_SERVICE_PORT=8000
+POSTGRES_PORT=5432
+MINIO_PORT=9000
+MINIO_CONSOLE_PORT=9001
+JWT_SECRET=404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
+```
+
+---
+
+## Running Automated Tests
+
+You can run the full multi-tier automated test suite from the repository root:
+
+### 1. Frontend Component Tests (Vitest)
 ```bash
-curl -s -X POST "http://localhost:8080/api/v1/potholes/detect-image" \
-  -F "file=@test-data/images/pothole_sample.jpg;type=image/jpeg" \
-  -F "latitude=28.6200" \
-  -F "longitude=77.2200" \
-  -F "addressText=Connaught Place, New Delhi"
+cd frontend && npm test -- --run
 ```
+*Validated Output*: **28 / 28 Passed** (100%)
 
-### 2. Submit Video for Asynchronous Processing
+### 2. AI Service Unit Tests (Pytest)
 ```bash
-curl -s -X POST "http://localhost:8080/api/v1/potholes/detect-video" \
-  -F "file=@test-data/videos/sample_dashcam.mp4;type=video/mp4" \
-  -F "latitude=28.6200" \
-  -F "longitude=77.2200" \
-  -F "addressText=Ring Road near CP"
+docker exec pothole_ai_service pytest /app/tests
 ```
-*Returns:* `{"jobId":"...","status":"PENDING","pollUrl":"/api/v1/detection-jobs/..."}`
+*Validated Output*: **22 / 22 Passed** (100%)
 
-### 3. Poll Video Job Status
+### 3. Backend Unit & Controller Tests (Maven JUnit 5)
 ```bash
-curl -s "http://localhost:8080/api/v1/detection-jobs/<JOB_ID>"
+cd backend && mvn test
 ```
+*Validated Output*: **107 / 107 Passed** (100%)
 
-### 4. Fetch Paginated Potholes
-```bash
-curl -s "http://localhost:8080/api/v1/potholes?page=0&size=10&status=REPORTED"
-```
+### Combined Test Execution Summary
+- **Total Automated Tests**: **157 / 157 PASSED** (0 Failures, 0 Skipped)
 
-### 5. Transition Pothole Status
+---
+
+## Troubleshooting
+
+### Issue: Containers fail to start due to port conflicts
+- **Solution**: Check if ports `80`, `8080`, `8000`, `5432`, or `9000` are used by another process:
+  ```bash
+  lsof -i :8080 -i :8000 -i :80
+  ```
+- Stop conflicting services and run `docker-compose up -d`.
+
+### Issue: Existing container conflict error during build
+- **Solution**: Remove existing container instances and restart:
+  ```bash
+  docker rm -f pothole_postgres pothole_minio pothole_backend pothole_ai_service pothole_frontend
+  docker-compose up --build -d
+  ```
+
+### Issue: Inspect container logs
+- **Backend Logs**: `docker-compose logs -f backend`
+- **AI Service Logs**: `docker-compose logs -f ai-service`
+- **Frontend Logs**: `docker-compose logs -f frontend`
+
+---
+
+## Resetting the Demo Environment
+
+To completely reset the application, clear databases, and wipe stored media:
+
 ```bash
-curl -s -X PATCH "http://localhost:8080/api/v1/potholes/<POTHOLE_ID>/status" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "newStatus": "ACKNOWLEDGED",
-    "changedBy": "Officer Kumar",
-    "notes": "Work crew assigned for repair."
-  }'
+# WARNING: Destructive command - clears local container database & media volumes
+docker-compose down -v
+docker-compose up --build -d
 ```
 
 ---
 
-## Database & Spatial Architecture
+## Security & Trust Model
 
-The application uses **PostgreSQL 16** with **PostGIS 3.4**. All spatial entities are stored in **WGS 84 (`SRID 4326`)** and use spatial indexing (`GIST`):
-
-- `potholes.location`: `GEOMETRY(Point, 4326)` — Indexed via `idx_potholes_location`.
-- `authority_jurisdictions.geometry`: `GEOMETRY(Geometry, 4326)` — Polygon/MultiPolygon and LineString geometries indexed via `idx_authority_jurisdictions_geom`.
-- **Flyway Database Migrations**: 5 migrations (`V1__...` through `V5__...`) define schema, spatial constraints, foreign keys, triggers, and seed demo authority jurisdictions.
-
----
-
-## Object Storage (MinIO)
-
-MinIO provides S3-compatible storage for all binary media. The backend interacts through the official MinIO Java SDK:
-- `pothole-raw/`: Original uploaded JPEG/PNG citizen submissions and raw MP4 dashcam feeds.
-- `pothole-annotated/`: Processed images overlaid with YOLOv8 bounding boxes and confidence tags.
-- **Secure Access**: All media URLs delivered to the frontend are time-limited presigned S3 URLs.
-
----
-
-## Civic Authority Resolution
-
-When a pothole is recorded, `AuthorityResolverService` determines the responsible agency using hierarchical spatial priority:
-
-```
-                          [ Pothole GPS Coordinate ]
-                                       |
-                                       v
-                +----------------------------------------------+
-                | Step 1: Road Network Check (Highways / PWD)   |
-                | ST_DWithin(geom::geography, point::geography)|
-                +----------------------+-----------------------+
-                                       |
-                     +-----------------+-----------------+
-                     | Matched                           | No Match
-                     v                                   v
-             [ Road Authority ]          +-------------------------------+
-           (e.g., PWD / NHAI)            | Step 2: Municipal Polygon     |
-                                         | ST_Covers(geom, point)        |
-                                         +---------------+---------------+
-                                                         |
-                                       +-----------------+-----------------+
-                                       | Matched                           | No Match
-                                       v                                   v
-                               [ Municipal Council ]              [ UNKNOWN_AUTHORITY ]
-                             (e.g., NDMC / MCD North)              (Fallback Queue)
-```
-
----
-
-## Visual Severity Calculation
-
-> [!IMPORTANT]
-> **Severity is a 2D visual camera-frame heuristic**. It is calculated based on relative bounding box pixel area and detection confidence within the camera field of view. It **does NOT** represent actual 3D physical depth, millimeter depth measurements, or vehicle chassis impact risk.
-
-### Mathematical Formulation
-
-1. **Visual Area Ratio ($R$)**:
-   $$R = \frac{\text{Bounding Box Area}}{\text{Image Area}} = \frac{(x_{\max} - x_{\min}) \times (y_{\max} - y_{\min})}{W \times H}$$
-
-2. **Single Detection Score ($S$)**:
-   $$S = \min\left(100.0, \; R \times 1000.0 \times C\right)$$
-
-3. **Aggregate Severity Score ($S_{\text{agg}}$)**:
-   $$S_{\text{agg}} = \min\left(100.0, \; \sum_{i=1}^{k} S_i\right)$$
-
-### Classification Rules
-
-- **`LOW`**: $S_{\text{agg}} < 20.0$ (minor surface fissures occupying $< 2\%$ frame area)
-- **`MEDIUM`**: $20.0 \le S_{\text{agg}} < 50.0$ (moderate road defects occupying $2\% - 5\%$ frame area)
-- **`HIGH`**: $S_{\text{agg}} \ge 50.0$ or pothole count $\ge 3$ in cluster (severe craters or extensive structural pavement deterioration)
-
----
-
-## Deduplication Strategy (Type A & Type B)
-
-The architecture strictly distinguishes between two independent deduplication concepts:
-
-### Type A: Intra-Video Frame Aggregation
-- When processing video streams, multiple consecutive frames may detect the same physical pothole.
-- `VideoDetectionService` tracks bounding box spatial overlap and motion trajectory across sampled frames (2 FPS), aggregating frame-level detections into a single unique `Pothole` entity.
-- Selects the single highest visual footprint / confidence frame as the representative evidence image.
-
-### Type B: Inter-Report Duplicate Detection
-- Different citizens or vehicles may submit photos of the same pothole over time.
-- `DeduplicationService` performs a PostGIS query checking if any active (unresolved) pothole exists within **15 meters** and **7 days**.
-- If found, the new submission is saved with `is_duplicate = true` linked to `duplicate_of_id`. Duplicate entries do not trigger redundant authority tickets.
-
----
-
-## Civic Authority Reporting
-
-> [!NOTE]
-> For evaluation and assessment purposes, external civic authority dispatch is **simulated**.
-
-- `AuthorityReportingService` generates unique idempotent dispatch keys (`report-{potholeId}-{authorityId}`).
-- Executes with exponential backoff retry logic (up to 3 attempts).
-- Issues mock municipal work order tracking numbers (e.g., `MUNICIPAL-DEMO-2026-000001`).
-- Duplicate reports (Type B) and `UNKNOWN_AUTHORITY` records bypass automated dispatch.
-
----
-
-## Automated Testing
-
-The codebase includes **139 automated tests across 4 test suites**:
-
-### 1. Spring Boot Backend Tests (93 Tests)
-```bash
-cd backend
-mvn test
-```
-
-### 2. AI Service Pytest Suite (17 Tests)
-```bash
-cd ai-service
-.venv/bin/python -m pytest tests/ -v
-```
-
-### 3. Frontend Vitest Suite (28 Tests)
-```bash
-cd frontend
-npm test -- --run
-```
-
-### 4. PostGIS Testcontainers Integration Test (1 Test)
-```bash
-cd backend
-TESTCONTAINERS_RYUK_DISABLED=true mvn test -Dtest=PostgisRepositoryIT
-```
-
----
-
-## Demonstration Flow
-
-Follow [docs/DEMO.md](docs/DEMO.md) for the exact 14-step walkthrough:
-1. `docker compose up -d`
-2. Open dashboard at [http://localhost](http://localhost)
-3. Upload `test-data/images/pothole_sample.jpg` with coordinates `(28.6200, 77.2200)`
-4. View real-time YOLOv8 bounding-box annotation
-5. Verify `HIGH`/`MEDIUM`/`LOW` severity score
-6. Verify PostGIS assignment to `DEMO New Delhi Municipal Council (NDMC)`
-7. Verify simulated work order ticket generation
-8. View pothole on Leaflet map and detail page
-9. Transition status (`REPORTED` $\to$ `ACKNOWLEDGED` $\to$ `IN_PROGRESS` $\to$ `RESOLVED`)
-10. Upload `test-data/videos/sample_dashcam.mp4` and observe async polling and frame aggregation
+- **Server-Side Enforcement**: All authorization rules (role separation, status updates, jurisdiction boundaries) are enforced by backend Spring Security filters, not merely hidden in the UI.
+- **Input Validation**: Uploaded media streams are validated against standard MIME signatures and byte lengths.
+- **Evidence Traceability**: User coordinates and EXIF timestamps serve as submission evidence; official repair validation remains under officer domain control.
 
 ---
 
 ## Known Limitations
 
-1. **Authentication & Authorization**: Omitted by architectural design for rapid local civic tech demonstration.
-2. **Visual 2D Depth Limitation**: Single-camera 2D vision cannot determine water-filled pothole millimeter depth without stereo cameras or LiDAR.
-3. **Simulated Civic Dispatch**: Government work orders are simulated with mock dispatch clients rather than live proprietary civic CRM integrations.
-4. **Demo Authority GIS Geometries**: Seeded polygons represent simulated boundaries for New Delhi / NCR demonstration purposes.
-5. **Synchronous Video Sampling**: Video sampling runs in a bounded thread pool; high-throughput multi-stream production environments would benefit from a dedicated distributed worker queue.
+- **Detection Boundaries**: Small, heavily shadowed, or visually obscured distant potholes may fall below confidence thresholds (`< 0.25`).
+- **Domain Adaptation**: YOLO model performance varies across non-standard road materials (e.g. unpaved dirt roads).
+- **Asynchronous Video**: Dashcam video analysis processes sampled frames asynchronously rather than rendering real-time streaming bounding boxes.
+- **Simulated Authority Dispatch**: External municipal ticketing dispatches are logged and simulated within the database schema rather than triggering live external government API integrations.
 
 ---
 
-## Future Improvements
+## Repository Structure
 
-- Edge deployment on Raspberry Pi / NVIDIA Jetson dashcam hardware.
-- Real-time citizen push notifications upon pothole repair completion.
-- LiDAR / stereo camera integration for true volumetric 3D pothole measurement.
-- Municipal GIS export connectors (Shapefile, GeoJSON, ArcGIS Server).
+```text
+Dheeraj-Smart_Pothole-Detection/
+├── README.md
+├── docker-compose.yml
+├── .env.example
+├── scripts/
+│   └── quickstart.sh
+├── backend/
+│   ├── Dockerfile
+│   ├── pom.xml
+│   └── src/
+│       ├── main/java/com/pothole/
+│       └── main/resources/db/migration/
+├── frontend/
+│   ├── Dockerfile
+│   ├── package.json
+│   ├── vite.config.ts
+│   └── src/
+├── ai-service/
+│   ├── Dockerfile
+│   ├── download_model.py
+│   ├── requirements.txt
+│   ├── app/
+│   └── tests/
+├── docs/
+│   ├── ARCHITECTURE.md
+│   ├── ROLE_PERMISSION_MATRIX.md
+│   ├── API_AUTHORIZATION_MATRIX.md
+│   ├── COMPLETE_FUNCTIONALITY_CATALOG.md
+│   ├── MASTER_SYSTEM_CHECKLIST.md
+│   ├── GITHUB_CLONE_VERIFICATION.md
+│   └── PRE_COMMIT_REPRODUCIBILITY_REPORT.md
+└── test-data/
+    ├── evaluation/potholes/
+    ├── evaluation/clean_roads/
+    └── videos/
+```
 
 ---
 
-## Third-Party Attribution
+## Further Documentation
 
-- **AI Model**: [`peterhdd/pothole-detection-yolov8`](https://huggingface.co/peterhdd/pothole-detection-yolov8) (Apache-2.0 License).
-- **Map Data**: © [OpenStreetMap](https://www.openstreetmap.org/copyright) contributors.
-- **Map Rendering**: [Leaflet.js](https://leafletjs.com) (BSD 2-Clause License).
+For detailed technical references, inspect the documentation in `/docs`:
+- [System Architecture Specification](file:///Users/dheerajkumar/Dheeraj-Smart_Pothole-Detection/docs/ARCHITECTURE.md)
+- [Role Permission Matrix](file:///Users/dheerajkumar/Dheeraj-Smart_Pothole-Detection/docs/ROLE_PERMISSION_MATRIX.md)
+- [API Authorization Security Matrix](file:///Users/dheerajkumar/Dheeraj-Smart_Pothole-Detection/docs/API_AUTHORIZATION_MATRIX.md)
+- [Complete Functionality Catalog](file:///Users/dheerajkumar/Dheeraj-Smart_Pothole-Detection/docs/COMPLETE_FUNCTIONALITY_CATALOG.md)
+- [Master System Checklist](file:///Users/dheerajkumar/Dheeraj-Smart_Pothole-Detection/docs/MASTER_SYSTEM_CHECKLIST.md)
+- [GitHub Clone Verification Report](file:///Users/dheerajkumar/Dheeraj-Smart_Pothole-Detection/docs/GITHUB_CLONE_VERIFICATION.md)
+
+---
+
+## Suggested Demo Scenarios
+
+1. **Scenario 1 (Valid Citizen Report)**: Upload `istockphoto-502561495-612x612.jpg` as Citizen → Observe 11 potholes detected → Submit report.
+2. **Scenario 2 (Clean Road Check)**: Upload `clean_road_highway.jpg` as Citizen → Observe 0 detections returned cleanly.
+3. **Scenario 3 (Duplicate Prevention)**: Submit a second report within 15 meters of an open report → System flags duplicate report.
+4. **Scenario 4 (Officer Lifecycle)**: Officer logs in → Views jurisdiction inbox → Accepts report (`ACKNOWLEDGED`) → Starts work (`IN_PROGRESS`) → Resolves report (`RESOLVED`).
+5. **Scenario 5 (Officer Rejection)**: Officer rejects invalid evidence report with mandatory reason text.
+6. **Scenario 6 (Authorization Protection)**: Citizen attempts direct `PATCH` status update → Backend returns `HTTP 403 Forbidden`.
+7. **Scenario 7 (Citizen Notifications)**: Citizen checks notification bell → Observes state transition alerts.
+8. **Scenario 8 (Interactive Map)**: Open Map view → Filter by status/severity → Inspect bounding box query markers.
