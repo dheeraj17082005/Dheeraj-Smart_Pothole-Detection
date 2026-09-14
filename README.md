@@ -118,6 +118,35 @@ cd backend && mvn test
 
 ---
 
+## 🎬 Evaluator Demo Workflow
+
+1. **Citizen Flow**: Log in as `citizen@test.com` (or register) ➔ Click **Report Pothole** ➔ Upload `test-data/images/istockphoto-502561495-612x612.jpg` + GPS `28.6139, 77.2090` ➔ View AI bounding boxes (`HIGH` severity, NDMC authority) ➔ View on Map.
+2. **Officer Flow**: Log in as verified officer `officer@test.com` (or register & verify) ➔ Open Review Queue ➔ Accept report (`ACCEPTED`) ➔ Start work (`IN_PROGRESS`) ➔ Mark resolved (`RESOLVED`).
+3. **Notification Verification**: Log back in as Citizen ➔ Check Notification Bell (`🔔 3`) ➔ Observe `REPORT_ACCEPTED`, `WORK_STARTED`, and `REPORT_RESOLVED` updates.
+
+---
+
+## 📋 Assessment / JD Coverage Matrix
+
+| JD Requirement | Implementation | Status |
+|---|---|---|
+| **AI Pothole Detection** | ONNX YOLOv8 model runs 640x640 single-pass inference returning bounding box coordinates and confidence scores. | **PASSED** |
+| **Dashcam Video Analysis** | Asynchronous frame sampling engine processes uploaded `.mp4` video streams and aggregates detections. | **PASSED** |
+| **Severity Assessment** | Visual surface area ratio calculator classifies hazards into `LOW` (<3%), `MEDIUM` (3–8%), and `HIGH` (>8%). | **PASSED** |
+| **Spatial / GIS Routing** | PostGIS spatial queries (`ST_DWithin`, `ST_Contains`, SRID 4326) calculate 15m deduplication and municipal jurisdictions. | **PASSED** |
+| **Role-Based Workflows** | Strict role separation: Citizens submit evidence (`ROLE_USER`); Verified Officers manage jurisdiction repair state machine (`ROLE_OFFICER`). | **PASSED** |
+| **Notifications & Map** | Automated real-time notification engine & Leaflet interactive map with custom severity markers and viewport bounds filtering. | **PASSED** |
+
+---
+
+## ⚠️ Known Limitations
+
+- **Shadow & Distant Potholes**: Small or heavily shadowed potholes (<25px) may fall below the 0.25 confidence threshold.
+- **Asynchronous Video**: Dashcam video analysis processes sampled frames asynchronously via HTTP 202 background jobs rather than real-time live webcams.
+- **Simulated Ticketing**: External municipal agency tickets are logged within database schema dispatches rather than calling live external government REST endpoints.
+
+---
+
 ## 📺 Demo Video & Presentation Assets
 
 - **Product Demo Video**: [`demo-assets/potholex-demo.mp4`](file:///Users/dheerajkumar/Dheeraj-Smart_Pothole-Detection/demo-assets/potholex-demo.mp4) (60s MP4)
