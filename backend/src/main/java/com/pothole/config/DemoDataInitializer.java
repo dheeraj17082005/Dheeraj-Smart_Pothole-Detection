@@ -41,53 +41,61 @@ public class DemoDataInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        // Seed Citizen Demo Accounts
-        if (userRepository.findByEmail("citizen@test.com").isEmpty()) {
-            User citizen = new User(
-                    "citizen@test.com",
-                    passwordEncoder.encode("password123"),
-                    "Test Citizen",
-                    "+91 9876543200",
-                    Role.ROLE_USER
-            );
-            userRepository.save(citizen);
-            log.info("Seeded demo citizen account: citizen@test.com");
-        }
+        // 1. Seed or update Citizen Demo Accounts
+        seedOrUpdateCitizen("aman.kumar@example.com", "password123", "Aman Kumar", "+91 9876543210");
+        seedOrUpdateCitizen("citizen@test.com", "password123", "Test Citizen", "+91 9876543200");
 
-        if (userRepository.findByEmail("aman.kumar@example.com").isEmpty()) {
-            User citizen = new User(
-                    "aman.kumar@example.com",
-                    passwordEncoder.encode("password123"),
-                    "Aman Kumar",
-                    "+91 9876543210",
-                    Role.ROLE_USER
-            );
-            userRepository.save(citizen);
-            log.info("Seeded demo citizen account: aman.kumar@example.com");
-        }
+        // 2. Seed or update Officer Demo Accounts
+        seedOrUpdateOfficer("officer.sharma@delhipwd.gov.in", "officerPass123", "Officer Rajesh Sharma", "+91 9876543211", "PWD-DL-8891");
+        seedOrUpdateOfficer("officer@test.com", "officerPass123", "Test Officer", "+91 9876543201", "PWD-DL-9999");
+    }
 
-        // Seed Officer Demo Accounts
-        if (userRepository.findByEmail("officer@test.com").isEmpty()) {
-            User officerUser = new User(
-                    "officer@test.com",
-                    passwordEncoder.encode("officerPass123"),
-                    "Test Officer",
-                    "+91 9876543201",
-                    Role.ROLE_OFFICER
-            );
-            officerUser = userRepository.save(officerUser);
+    private void seedOrUpdateCitizen(String email, String rawPassword, String name, String phone) {
+        User citizen = userRepository.findByEmail(email).orElseGet(() -> new User(
+                email,
+                passwordEncoder.encode(rawPassword),
+                name,
+                phone,
+                Role.ROLE_USER
+        ));
+        citizen.setPasswordHash(passwordEncoder.encode(rawPassword));
+        citizen.setRole(Role.ROLE_USER);
+        userRepository.save(citizen);
+        log.info("Ensured demo citizen account: {} with password: {}", email, rawPassword);
+    }
 
-            OfficerProfile profile = new OfficerProfile(
-                    officerUser,
+    private void seedOrUpdateOfficer(String email, String rawPassword, String name, String phone, String badgeNumber) {
+        User officerUser = userRepository.findByEmail(email).orElseGet(() -> new User(
+                email,
+                passwordEncoder.encode(rawPassword),
+                name,
+                phone,
+                Role.ROLE_OFFICER
+        ));
+        officerUser.setPasswordHash(passwordEncoder.encode(rawPassword));
+        officerUser.setRole(Role.ROLE_OFFICER);
+        officerUser = userRepository.save(officerUser);
+
+        final User finalUser = officerUser;
+        OfficerProfile profile = officerProfileRepository.findByUser(officerUser).orElseGet(() -> {
+            OfficerProfile p = new OfficerProfile(
+                    finalUser,
                     "Delhi PWD Central Circle",
-                    "PWD-DL-9999",
-                    "officer-docs/test_id_card.pdf"
+                    badgeNumber,
+                    "officer-docs/demo_id_card.pdf"
             );
-            profile.setVerificationStatus(VerificationStatus.VERIFIED);
+            p.setVerificationStatus(VerificationStatus.VERIFIED);
+            p.setVerifiedAt(OffsetDateTime.now());
+            p.setVerifiedBy("SYSTEM_AUTO_SEED");
+            return officerProfileRepository.save(p);
+        });
+        profile.setVerificationStatus(VerificationStatus.VERIFIED);
+        if (profile.getVerifiedAt() == null) {
             profile.setVerifiedAt(OffsetDateTime.now());
-            profile.setVerifiedBy("SYSTEM_AUTO_SEED");
-            profile = officerProfileRepository.save(profile);
+        }
+        profile = officerProfileRepository.save(profile);
 
+        if (officerJurisdictionRepository.findByOfficerProfileAndActiveTrue(profile).isEmpty()) {
             Point officePoint = geometryFactory.createPoint(new Coordinate(77.2200, 28.6200));
             OfficerJurisdiction jurisdiction = new OfficerJurisdiction(
                     profile,
@@ -96,39 +104,7 @@ public class DemoDataInitializer implements CommandLineRunner {
                     15.0
             );
             officerJurisdictionRepository.save(jurisdiction);
-            log.info("Seeded demo verified officer account: officer@test.com");
         }
-
-        if (userRepository.findByEmail("officer.sharma@delhipwd.gov.in").isEmpty()) {
-            User officerUser = new User(
-                    "officer.sharma@delhipwd.gov.in",
-                    passwordEncoder.encode("officerPass123"),
-                    "Officer Rajesh Sharma",
-                    "+91 9876543211",
-                    Role.ROLE_OFFICER
-            );
-            officerUser = userRepository.save(officerUser);
-
-            OfficerProfile profile = new OfficerProfile(
-                    officerUser,
-                    "Delhi PWD Central Circle",
-                    "PWD-DL-8891",
-                    "officer-docs/demo_id_card.pdf"
-            );
-            profile.setVerificationStatus(VerificationStatus.VERIFIED);
-            profile.setVerifiedAt(OffsetDateTime.now());
-            profile.setVerifiedBy("SYSTEM_AUTO_SEED");
-            profile = officerProfileRepository.save(profile);
-
-            Point officePoint = geometryFactory.createPoint(new Coordinate(77.2200, 28.6200));
-            OfficerJurisdiction jurisdiction = new OfficerJurisdiction(
-                    profile,
-                    "Delhi Central Circle Division",
-                    officePoint,
-                    10.0
-            );
-            officerJurisdictionRepository.save(jurisdiction);
-            log.info("Seeded demo verified officer account: officer.sharma@delhipwd.gov.in");
-        }
+        log.info("Ensured demo verified officer account: {} with password: {}", email, rawPassword);
     }
 }
