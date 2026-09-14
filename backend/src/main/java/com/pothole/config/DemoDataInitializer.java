@@ -41,7 +41,19 @@ public class DemoDataInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        // Seed Citizen Demo Account
+        // Seed Citizen Demo Accounts
+        if (userRepository.findByEmail("citizen@test.com").isEmpty()) {
+            User citizen = new User(
+                    "citizen@test.com",
+                    passwordEncoder.encode("password123"),
+                    "Test Citizen",
+                    "+91 9876543200",
+                    Role.ROLE_USER
+            );
+            userRepository.save(citizen);
+            log.info("Seeded demo citizen account: citizen@test.com");
+        }
+
         if (userRepository.findByEmail("aman.kumar@example.com").isEmpty()) {
             User citizen = new User(
                     "aman.kumar@example.com",
@@ -54,7 +66,39 @@ public class DemoDataInitializer implements CommandLineRunner {
             log.info("Seeded demo citizen account: aman.kumar@example.com");
         }
 
-        // Seed Officer Demo Account
+        // Seed Officer Demo Accounts
+        if (userRepository.findByEmail("officer@test.com").isEmpty()) {
+            User officerUser = new User(
+                    "officer@test.com",
+                    passwordEncoder.encode("officerPass123"),
+                    "Test Officer",
+                    "+91 9876543201",
+                    Role.ROLE_OFFICER
+            );
+            officerUser = userRepository.save(officerUser);
+
+            OfficerProfile profile = new OfficerProfile(
+                    officerUser,
+                    "Delhi PWD Central Circle",
+                    "PWD-DL-9999",
+                    "officer-docs/test_id_card.pdf"
+            );
+            profile.setVerificationStatus(VerificationStatus.VERIFIED);
+            profile.setVerifiedAt(OffsetDateTime.now());
+            profile.setVerifiedBy("SYSTEM_AUTO_SEED");
+            profile = officerProfileRepository.save(profile);
+
+            Point officePoint = geometryFactory.createPoint(new Coordinate(77.2200, 28.6200));
+            OfficerJurisdiction jurisdiction = new OfficerJurisdiction(
+                    profile,
+                    "Delhi Central Circle Division",
+                    officePoint,
+                    15.0
+            );
+            officerJurisdictionRepository.save(jurisdiction);
+            log.info("Seeded demo verified officer account: officer@test.com");
+        }
+
         if (userRepository.findByEmail("officer.sharma@delhipwd.gov.in").isEmpty()) {
             User officerUser = new User(
                     "officer.sharma@delhipwd.gov.in",

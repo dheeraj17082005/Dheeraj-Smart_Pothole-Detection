@@ -118,10 +118,23 @@ cd backend && mvn test
 
 ---
 
+## 🔑 Pre-Seeded Demo Credentials
+
+| Role | Email / Username | Password | Status / Access Level |
+|---|---|---|---|
+| **Citizen User** (`ROLE_USER`) | `citizen@test.com` | `password123` | Pre-seeded citizen account |
+| **Citizen User** (`ROLE_USER`) | `aman.kumar@example.com` | `password123` | Pre-seeded citizen account |
+| **Municipal Officer** (`ROLE_OFFICER`) | `officer@test.com` | `officerPass123` | Pre-verified officer (Delhi Central Circle) |
+| **Municipal Officer** (`ROLE_OFFICER`) | `officer.sharma@delhipwd.gov.in` | `officerPass123` | Pre-verified officer (Delhi PWD Circle) |
+
+> **Note**: Evaluators may also register new Citizen or Officer accounts directly on the UI at `http://localhost`.
+
+---
+
 ## 🎬 Evaluator Demo Workflow
 
-1. **Citizen Flow**: Log in as `citizen@test.com` (or register) ➔ Click **Report Pothole** ➔ Upload `test-data/images/istockphoto-502561495-612x612.jpg` + GPS `28.6139, 77.2090` ➔ View AI bounding boxes (`HIGH` severity, NDMC authority) ➔ View on Map.
-2. **Officer Flow**: Log in as verified officer `officer@test.com` (or register & verify) ➔ Open Review Queue ➔ Accept report (`ACCEPTED`) ➔ Start work (`IN_PROGRESS`) ➔ Mark resolved (`RESOLVED`).
+1. **Citizen Flow**: Log in as `citizen@test.com` (password: `password123`) ➔ Click **Report Pothole** ➔ Upload `test-data/images/istockphoto-502561495-612x612.jpg` + GPS `28.6139, 77.2090` ➔ View AI bounding boxes (`HIGH` severity, NDMC authority) ➔ View on Map.
+2. **Officer Flow**: Log in as verified officer `officer@test.com` (password: `officerPass123`) ➔ Open Review Queue ➔ Accept report (`ACCEPTED`) ➔ Start work (`IN_PROGRESS`) ➔ Mark resolved (`RESOLVED`).
 3. **Notification Verification**: Log back in as Citizen ➔ Check Notification Bell (`🔔 3`) ➔ Observe `REPORT_ACCEPTED`, `WORK_STARTED`, and `REPORT_RESOLVED` updates.
 
 ---
