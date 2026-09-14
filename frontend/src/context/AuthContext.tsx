@@ -19,23 +19,31 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [token, setToken] = useState<string | null>(localStorage.getItem('authToken'));
+  // Use sessionStorage so new browser opens always start on the login page for clean testing
+  const [token, setToken] = useState<string | null>(() => {
+    return sessionStorage.getItem('authToken');
+  });
   const [user, setUser] = useState<User | null>(() => {
-    const savedUser = localStorage.getItem('authUser');
+    const savedUser = sessionStorage.getItem('authUser');
     return savedUser ? JSON.parse(savedUser) : null;
   });
   const [verificationStatus, setVerificationStatus] = useState<VerificationStatus | null>(() => {
-    return (localStorage.getItem('authVerificationStatus') as VerificationStatus) || null;
+    return (sessionStorage.getItem('authVerificationStatus') as VerificationStatus) || null;
   });
   const [initialLoading, setInitialLoading] = useState<boolean>(true);
 
   useEffect(() => {
+    // Clear any legacy localStorage keys to ensure fresh browser window opens start at login
+    localStorage.removeItem('authToken');
+    localStorage.removeItem('authUser');
+    localStorage.removeItem('authVerificationStatus');
+
     if (token && !user) {
       setInitialLoading(true);
       apiClient.getCurrentUser()
         .then((fetchedUser) => {
           setUser(fetchedUser);
-          localStorage.setItem('authUser', JSON.stringify(fetchedUser));
+          sessionStorage.setItem('authUser', JSON.stringify(fetchedUser));
         })
         .catch(() => {
           logout();
@@ -50,7 +58,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const setAuthData = (response: AuthResponse) => {
     setToken(response.token);
-    localStorage.setItem('authToken', response.token);
+    sessionStorage.setItem('authToken', response.token);
 
     const userObj: User = {
       id: response.id,
@@ -59,14 +67,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       role: response.role
     };
     setUser(userObj);
-    localStorage.setItem('authUser', JSON.stringify(userObj));
+    sessionStorage.setItem('authUser', JSON.stringify(userObj));
 
     if (response.verificationStatus) {
       setVerificationStatus(response.verificationStatus);
-      localStorage.setItem('authVerificationStatus', response.verificationStatus);
+      sessionStorage.setItem('authVerificationStatus', response.verificationStatus);
     } else {
       setVerificationStatus(null);
-      localStorage.removeItem('authVerificationStatus');
+      sessionStorage.removeItem('authVerificationStatus');
     }
   };
 
@@ -80,6 +88,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setToken(null);
     setUser(null);
     setVerificationStatus(null);
+    sessionStorage.removeItem('authToken');
+    sessionStorage.removeItem('authUser');
+    sessionStorage.removeItem('authVerificationStatus');
     localStorage.removeItem('authToken');
     localStorage.removeItem('authUser');
     localStorage.removeItem('authVerificationStatus');

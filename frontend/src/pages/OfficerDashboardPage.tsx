@@ -60,7 +60,7 @@ export const OfficerDashboardPage: React.FC = () => {
         body: JSON.stringify({ verificationStatus: 'VERIFIED', verifiedBy: 'DEMO_AUTO_ADMIN' })
       });
       setActionSuccess('Officer status updated to VERIFIED! Loading jurisdiction reports...');
-      localStorage.setItem('authVerificationStatus', 'VERIFIED');
+      sessionStorage.setItem('authVerificationStatus', 'VERIFIED');
       await loadOfficerData();
     } catch (err: any) {
       setError('Verification simulation failed: ' + err.message);

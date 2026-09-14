@@ -84,7 +84,7 @@ export interface DetectVideoParams {
 }
 
 function getAuthHeaders(headers: Record<string, string> = {}): Record<string, string> {
-  const token = localStorage.getItem('authToken');
+  const token = sessionStorage.getItem('authToken') || localStorage.getItem('authToken');
   if (token) {
     return {
       ...headers,
