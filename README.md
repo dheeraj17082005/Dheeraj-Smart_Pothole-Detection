@@ -11,7 +11,7 @@ flowchart TD
     subgraph CitizenPortal ["1. CITIZEN PORTAL (ROLE_USER)"]
         A["📷 Submit Evidence"] -->|Upload Image / MP4 + GPS| B["AI Detection Feedback"]
         B -->|View Bounding Boxes & Severity| C["Track Report Status"]
-        D["🔔 Receive Progress Alerts"] <-- Notification Event -- P
+        D["🔔 Receive Progress Alerts"]
     end
 
     subgraph CoreEngine ["2. AI & SPATIAL PROCESSING"]
@@ -19,20 +19,21 @@ flowchart TD
         E -->|BBoxes & Confidence| F["Visual Surface Area Scoring"]
         F --> G["PostGIS Spatial Processing"]
         G --> H{"Check 15m Radius Duplicate"}
-        H -- "Duplicate" --> I["Link Parent Pothole ID"]
-        H -- "Unique" --> J["Assign Municipal Jurisdiction"]
+        H -->|Duplicate| I["Link Parent Pothole ID"]
+        H -->|Unique| J["Assign Municipal Jurisdiction"]
     end
 
     subgraph OfficerPortal ["3. OFFICER WORKSPACE (ROLE_OFFICER)"]
         J --> K["Verified Jurisdiction Review Queue"]
         K --> L{"Officer Decision"}
-        L -- "Reject" --> M["REJECTED (Store Note & Reason)"]
-        L -- "Accept" --> N["ACCEPTED (Dispatch Repair Crew)"]
+        L -->|Reject| M["REJECTED (Store Note & Reason)"]
+        L -->|Accept| N["ACCEPTED (Dispatch Repair Crew)"]
         N --> O["IN_PROGRESS (Work Underway)"]
         O --> P["RESOLVED (Patch Completed)"]
     end
 
-    M --> D
+    P -->|Notification Event| D
+    M -->|Notification Event| D
 ```
 
 ---
